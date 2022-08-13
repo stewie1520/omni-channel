@@ -4,6 +4,7 @@ import { ButtonAuthGoogle } from "~/components/buttons/auth-google";
 import { Input } from "~/components/inputs/input";
 import { Button } from "~/components/buttons/button";
 import { LoginSideBar } from "~/components/sidebar/login-sidebar";
+import { Link } from "@remix-run/react";
 
 export default function LoginPage() {
   return (
@@ -20,12 +21,12 @@ export default function LoginPage() {
                   </h1>
                   <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Don't have an account yet?
-                    <a
+                    <Link
                       className="ml-1 font-medium text-blue-600 decoration-2 hover:underline"
-                      href="sign-up"
+                      to="/sign-up"
                     >
                       Sign up here
-                    </a>
+                    </Link>
                   </p>
                 </div>
                 <div className="mt-5 grid gap-y-4">

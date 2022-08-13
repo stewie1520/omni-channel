@@ -1,12 +1,46 @@
-import IconMail from "@ant-design/icons/MailOutlined";
 import IconLock from "@ant-design/icons/LockOutlined";
+import IconMail from "@ant-design/icons/MailOutlined";
 import IconUser from "@ant-design/icons/UserOutlined";
+import { Link, useActionData } from "@remix-run/react";
+import type { ActionFunction } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
 import { ButtonAuthGoogle } from "~/components/buttons/auth-google";
-import { Input } from "~/components/inputs/input";
 import { Button } from "~/components/buttons/button";
+import { Input } from "~/components/inputs/input";
 import { SignUpSideBar } from "~/components/sidebar/sign-up-sidebar";
+import { createLoginEmailUser } from "~/models/user/user.server";
+
+type ActionData = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+
+  const dto = {
+    firstName: formData.get("first-name"),
+    lastName: formData.get("last-name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  const { error, value } = createLoginEmailUser.validate(dto);
+
+  if (error) {
+    return json<ActionData>(error);
+  }
+
+  await createLoginEmailUser(value!);
+  return redirect("/");
+};
 
 export default function SignUpPage() {
+  const error = useActionData() as ActionData;
+
   return (
     <>
       <div className="grid h-full grid-cols-2">
@@ -21,29 +55,35 @@ export default function SignUpPage() {
                   </h1>
                   <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Already have an account?
-                    <a
+                    <Link
                       className="ml-1 font-medium text-blue-600 decoration-2 hover:underline"
-                      href="login"
+                      to="/login"
                     >
                       Sign in here
-                    </a>
+                    </Link>
                   </p>
                 </div>
-                <div className="mt-5 grid gap-y-4">
+                <div className="mt-5">
                   <ButtonAuthGoogle label="Sign up with Google" />
                   <div className="flex items-center py-3 text-xs uppercase text-gray-400 before:mr-6 before:flex-[1_1_0%] before:border-t before:border-gray-200 after:ml-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 dark:text-gray-500 dark:before:border-gray-600 dark:after:border-gray-600">
                     Or
                   </div>
+                </div>
 
+                <form method="POST" className="mt-5 grid gap-y-4">
                   <div className="grid grid-cols-2 gap-x-2">
                     <Input
+                      name="first-name"
                       label="First Name"
                       leadingIcon={IconUser}
                       type="text"
+                      error={error?.firstName}
                       placeholder="Jane"
                     />
                     <Input
+                      name="last-name"
                       label="Last Name"
+                      error={error?.lastName}
                       leadingIcon={IconUser}
                       type="text"
                       placeholder="Doe"
@@ -51,15 +91,19 @@ export default function SignUpPage() {
                   </div>
 
                   <Input
+                    name="email"
                     leadingIcon={IconMail}
                     label="Your Email"
                     type="email"
+                    error={error?.email}
                     placeholder="jane.doe@example.com"
                   />
                   <Input
+                    name="password"
                     leadingIcon={IconLock}
                     label="Your Password"
                     type="password"
+                    error={error?.password}
                     placeholder="Password"
                   />
 
@@ -89,7 +133,7 @@ export default function SignUpPage() {
                   </div>
 
                   <Button>Create account</Button>
-                </div>
+                </form>
               </div>
             </div>
           </div>
