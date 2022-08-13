@@ -16,7 +16,6 @@ export default function handleRequest(
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"
     : "onShellReady";
-
   return new Promise((resolve, reject) => {
     let didError = false;
 
