@@ -3,39 +3,43 @@ import IconMail from "@ant-design/icons/MailOutlined";
 import IconUser from "@ant-design/icons/UserOutlined";
 import { Link, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
 import { ButtonAuthGoogle } from "~/components/buttons/auth-google";
 import { Button } from "~/components/buttons/button";
 import { Input } from "~/components/inputs/input";
 import { SignUpSideBar } from "~/components/sidebar/sign-up-sidebar";
-import { createLoginEmailUser } from "~/models/user/user.server";
+import { createLoginEmailUser } from "~/models/user/create-login-email-user.server";
 
 type ActionData = {
   firstName?: string;
   lastName?: string;
   email?: string;
   password?: string;
+  error?: string;
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
+  try {
+    const formData = await request.formData();
 
-  const dto = {
-    firstName: formData.get("first-name"),
-    lastName: formData.get("last-name"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
+    const dto = {
+      firstName: formData.get("first-name"),
+      lastName: formData.get("last-name"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
 
-  const { error, value } = createLoginEmailUser.validate(dto);
+    const { error, value } = createLoginEmailUser.validate(dto);
 
-  if (error) {
-    return json<ActionData>(error);
+    if (error) {
+      return json<ActionData>(error);
+    }
+
+    await createLoginEmailUser(value!);
+    return redirect("/");
+  } catch (err) {
+    return json<ActionData>(err as ActionData);
   }
-
-  await createLoginEmailUser(value!);
-  return redirect("/");
 };
 
 export default function SignUpPage() {
