@@ -1,14 +1,22 @@
 import IconLock from "@ant-design/icons/LockOutlined";
 import IconMail from "@ant-design/icons/MailOutlined";
 import IconUser from "@ant-design/icons/UserOutlined";
-import { Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
-import { ButtonAuthGoogle } from "~/components/buttons/auth-google";
 import { Button } from "~/components/buttons/button";
 import { Input } from "~/components/inputs/input";
-import { SignUpSideBar } from "~/components/sidebar/sign-up-sidebar";
 import { createLoginEmailUser } from "~/models/user/create-login-email-user.server";
+import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
+import { AuthCheckbox } from "~/page-components/auth/checkbox";
+import { SignUpSideBar } from "~/page-components/auth/sign-up-sidebar";
+import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
+import { isEmail } from "~/libs/strings/isEmail";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useCallback, useState } from "react";
+import _debounce from "lodash/debounce";
 
 type ActionData = {
   firstName?: string;
@@ -23,13 +31,13 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
 
     const dto = {
-      firstName: formData.get("first-name"),
-      lastName: formData.get("last-name"),
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
       email: formData.get("email"),
       password: formData.get("password"),
     };
 
-    const { error, value } = createLoginEmailUser.validate(dto);
+    const { error, value } = await createLoginEmailUser.validate(dto);
 
     if (error) {
       return json<ActionData>(error);
@@ -42,8 +50,84 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
+const validationSchema = yup.object().shape({
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
+  email: yup.string().email("Email is invalid").required("Email is required"),
+  password: yup.string().min(6).required("Password is required"),
+  accept: yup
+    .boolean()
+    .oneOf([true], "You must accept the terms and conditions"),
+});
+
+const validateEmailAsync = async (email: string) => {
+  try {
+    if (!isEmail(email)) return;
+    const result = await fetch("/api/user/email-exists", {
+      method: "post",
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await result.json();
+    if (data.exists) {
+      return "Email already exists";
+    }
+  } catch (err: any) {
+    return err.message as string;
+  }
+};
+
 export default function SignUpPage() {
-  const error = useActionData() as ActionData;
+  const serverError = useActionData() as ActionData;
+  const {
+    register,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors, isValid, touchedFields },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    mode: "onTouched",
+  });
+
+  const [isValidating, setIsValidating] = useState(false);
+
+  const transition = useTransition();
+
+  const validateEmailDebounced = useCallback(
+    _debounce((email) => {
+      setIsValidating(true);
+      validateEmailAsync(email)
+        .then((result) => {
+          if (result) {
+            return setError("email", {
+              type: "manual",
+              message: result,
+            });
+          }
+          return clearErrors("email");
+        })
+        .finally(() => setIsValidating(false));
+    }, 500),
+    [setError]
+  );
+
+  const handleEmailChanged = useCallback(
+    (e: any) => {
+      setValue("email", e.target.value);
+      if (!touchedFields["email"]) return;
+      validateEmailDebounced(e.target.value);
+    },
+    [setValue, validateEmailDebounced, touchedFields]
+  );
+
+  const handleInputEmailBlurred = useCallback(
+    (e: any) => {
+      setValue("email", e.target.value, { shouldTouch: true });
+      validateEmailDebounced(e.target.value);
+    },
+    [validateEmailDebounced]
+  );
 
   return (
     <>
@@ -67,77 +151,75 @@ export default function SignUpPage() {
                     </Link>
                   </p>
                 </div>
-                <div className="mt-5">
-                  <ButtonAuthGoogle label="Sign up with Google" />
-                  <div className="flex items-center py-3 text-xs uppercase text-gray-400 before:mr-6 before:flex-[1_1_0%] before:border-t before:border-gray-200 after:ml-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 dark:text-gray-500 dark:before:border-gray-600 dark:after:border-gray-600">
-                    Or
-                  </div>
-                </div>
 
-                <form method="POST" className="mt-5 grid gap-y-4">
+                <ThirdPartyProviders>
+                  <ButtonAuthGoogle label="Sign up with Google" />
+                </ThirdPartyProviders>
+
+                <Form method="post" className="mt-5 grid gap-y-4">
                   <div className="grid grid-cols-2 gap-x-2">
                     <Input
-                      name="first-name"
                       label="First Name"
                       leadingIcon={IconUser}
                       type="text"
-                      error={error?.firstName}
+                      error={
+                        serverError?.firstName || errors?.firstName?.message
+                      }
                       placeholder="Jane"
+                      {...register("firstName")}
                     />
                     <Input
-                      name="last-name"
                       label="Last Name"
-                      error={error?.lastName}
+                      error={serverError?.lastName || errors?.lastName?.message}
                       leadingIcon={IconUser}
                       type="text"
                       placeholder="Doe"
+                      {...register("lastName")}
                     />
                   </div>
 
                   <Input
-                    name="email"
+                    loading={isValidating}
                     leadingIcon={IconMail}
                     label="Your Email"
                     type="email"
-                    error={error?.email}
+                    error={
+                      !isValidating &&
+                      (serverError?.email || errors?.email?.message)
+                    }
                     placeholder="jane.doe@example.com"
+                    {...register("email")}
+                    onChange={handleEmailChanged}
+                    onBlur={handleInputEmailBlurred}
                   />
                   <Input
-                    name="password"
                     leadingIcon={IconLock}
                     label="Your Password"
                     type="password"
-                    error={error?.password}
+                    error={serverError?.password || errors?.password?.message}
                     placeholder="Password"
+                    {...register("password")}
                   />
 
-                  <div className="flex items-center">
-                    <div className="flex">
-                      <input
-                        id="agree-terms"
-                        name="agree-terms"
-                        type="checkbox"
-                        className="mt-0.5 shrink-0 rounded border-gray-200 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:checked:border-blue-500 dark:checked:bg-blue-500 dark:focus:ring-offset-gray-800"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="agree-terms"
-                        className="text-sm dark:text-white"
-                      >
-                        I accept the{" "}
-                        <a
-                          className="font-medium text-blue-600 decoration-2 hover:underline"
-                          href="#"
-                        >
-                          Terms and Conditions
-                        </a>
-                      </label>
-                    </div>
-                  </div>
-
-                  <Button>Create account</Button>
-                </form>
+                  <AuthCheckbox {...register("accept")}>
+                    I accept the{" "}
+                    <Link
+                      className="font-medium text-blue-600 hover:underline"
+                      to="#"
+                    >
+                      Terms and Conditions
+                    </Link>
+                  </AuthCheckbox>
+                  <Button
+                    disabled={
+                      !!serverError ||
+                      !isValid ||
+                      transition.state === "submitting"
+                    }
+                  >
+                    Create account
+                  </Button>
+                </Form>
               </div>
             </div>
           </div>

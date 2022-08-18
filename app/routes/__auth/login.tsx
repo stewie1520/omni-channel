@@ -1,10 +1,11 @@
-import IconMail from "@ant-design/icons/MailOutlined";
 import IconLock from "@ant-design/icons/LockOutlined";
-import { ButtonAuthGoogle } from "~/components/buttons/auth-google";
-import { Input } from "~/components/inputs/input";
-import { Button } from "~/components/buttons/button";
-import { LoginSideBar } from "~/components/sidebar/login-sidebar";
+import IconMail from "@ant-design/icons/MailOutlined";
 import { Link } from "@remix-run/react";
+import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
+import { Button } from "~/components/buttons/button";
+import { Input } from "~/components/inputs/input";
+import { LoginSideBar } from "~/page-components/auth/login-sidebar";
+import { AuthCheckbox } from "~/page-components/auth/checkbox";
 
 export default function LoginPage() {
   return (
@@ -48,24 +49,7 @@ export default function LoginPage() {
                     placeholder="Password"
                   />
 
-                  <div className="flex items-center">
-                    <div className="flex">
-                      <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        className="mt-0.5 shrink-0 rounded border-gray-200 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:checked:border-blue-500 dark:checked:bg-blue-500 dark:focus:ring-offset-gray-800"
-                      />
-                    </div>
-                    <div className="ml-3">
-                      <label
-                        htmlFor="remember-me"
-                        className="text-sm dark:text-white"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                  </div>
+                  <AuthCheckbox>Remember me</AuthCheckbox>
 
                   <Button>Continue</Button>
                 </div>

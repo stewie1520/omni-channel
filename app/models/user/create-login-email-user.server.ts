@@ -1,18 +1,17 @@
 import type { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import bcrypt from "bcryptjs";
-import joi from "joi";
 import { prisma } from "~/db.server";
+import type { ControllerFunction } from "~/libs/types/controller";
+import * as yup from "yup";
 
 import type { CreateLoginEmailUserDto } from "./dtos/create-login-email-user.dto";
 
-export const createLoginEmailUser: {
-  (requestPayload: CreateLoginEmailUserDto): Promise<User>;
-  validate: (t: any) => {
-    value?: CreateLoginEmailUserDto;
-    error?: { [key in keyof CreateLoginEmailUserDto]: string };
-  };
-} = async (dto: CreateLoginEmailUserDto) => {
+
+export const createLoginEmailUser: ControllerFunction<
+  CreateLoginEmailUserDto,
+  User
+> = async (dto) => {
   try {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
@@ -33,20 +32,28 @@ export const createLoginEmailUser: {
   }
 };
 
-createLoginEmailUser.validate = (t) => {
-  const schema = joi.object({
-    firstName: joi.string(),
-    lastName: joi.string(),
-    email: joi.string().email().required(),
-    password: joi.string().min(6).alphanum(),
-  });
+createLoginEmailUser.validate = async (t) => {
+  try {
+    const validationSchema = yup.object().shape({
+      firstName: yup.string().required(),
+      lastName: yup.string().required(),
+      email: yup.string().email().required(),
+      password: yup.string().min(6).required(),
+    });
 
-  const validationResult = schema.validate(t);
 
-  const error = validationResult.error?.details.reduce((carry, detail) => {
-    carry![detail.path[0] as keyof CreateLoginEmailUserDto] = detail.message;
-    return carry;
-  }, {} as ReturnType<typeof createLoginEmailUser.validate>["error"]);
+    await validationSchema.validate(t);
 
-  return { value: validationResult.value, error };
+    return { value: t };
+  } catch (err: any) {
+    if (err instanceof yup.ValidationError) {
+      return {
+        error: {
+          [err.path!]: err.errors[0],
+        },
+      };
+    }
+
+    throw err;
+  }
 };
