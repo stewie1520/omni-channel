@@ -15,7 +15,6 @@ export const action: ActionFunction = async ({ request }) => {
   const requestData = (await request.json()) as ActionRequestData;
   const { error, value } = await checkEmailExists.validate(requestData);
   if (error) {
-    console.log("error", error);
     return new HttpValidationError(error);
   }
 

@@ -1,12 +1,12 @@
-import { prisma } from "~/db.server";
 import type { ControllerFunction } from "~/libs/types/controller";
 import * as yup from "yup";
+import { getUserByEmail } from "./user.server";
 
 export const checkEmailExists: ControllerFunction<
   { email: string },
   boolean
 > = async ({ email }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await getUserByEmail(email);
   return !!user;
 };
 

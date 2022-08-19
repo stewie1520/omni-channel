@@ -22,7 +22,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Remix Notes",
+  title: "Omni Channel",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -31,6 +31,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  console.log("loader in root");
   return json<LoaderData>({
     user: await getUser(request),
   });
@@ -48,6 +49,7 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <script src="js/hs-ui.bundle.js"></script>
       </body>
     </html>
   );

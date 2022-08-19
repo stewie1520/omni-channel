@@ -15,11 +15,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     if (user) {
       return redirect("/");
     }
-
+  } catch (err) {
+    console.log(err);
+  } finally {
     return json<AuthLayoutData>({
       redirect: "/",
     });
-  } catch (err) {}
+  }
 };
 
 export default function AuthLayout() {

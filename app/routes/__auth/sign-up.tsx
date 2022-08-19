@@ -1,6 +1,7 @@
 import IconLock from "@ant-design/icons/LockOutlined";
 import IconMail from "@ant-design/icons/MailOutlined";
 import IconUser from "@ant-design/icons/UserOutlined";
+import IconLoading from "@ant-design/icons/LoadingOutlined";
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
@@ -15,8 +16,9 @@ import { isEmail } from "~/libs/strings/isEmail";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import _debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
 
 type ActionData = {
   firstName?: string;
@@ -78,12 +80,20 @@ const validateEmailAsync = async (email: string) => {
 };
 
 export default function SignUpPage() {
-  const serverError = useActionData() as ActionData;
+  const actionData = useActionData() as ActionData;
+
+  const [serverError, setServerError] = useState(actionData);
+
+  useEffect(() => {
+    setServerError(actionData);
+  }, [actionData]);
+
   const {
     register,
     setValue,
     setError,
     clearErrors,
+    trigger,
     formState: { errors, isValid, touchedFields },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -105,6 +115,8 @@ export default function SignUpPage() {
               message: result,
             });
           }
+
+          setServerError({});
           return clearErrors("email");
         })
         .finally(() => setIsValidating(false));
@@ -126,7 +138,7 @@ export default function SignUpPage() {
       setValue("email", e.target.value, { shouldTouch: true });
       validateEmailDebounced(e.target.value);
     },
-    [validateEmailDebounced]
+    [validateEmailDebounced, setValue]
   );
 
   return (
@@ -145,7 +157,7 @@ export default function SignUpPage() {
                     Already have an account?
                     <Link
                       className="ml-1 font-medium text-blue-600 decoration-2 hover:underline"
-                      to="/login"
+                      to="/sign-in"
                     >
                       Sign in here
                     </Link>
@@ -201,7 +213,12 @@ export default function SignUpPage() {
                     {...register("password")}
                   />
 
-                  <AuthCheckbox {...register("accept")}>
+                  <AuthCheckbox
+                    id="accept-term"
+                    {...register("accept", {
+                      onChange: () => trigger("accept"),
+                    })}
+                  >
                     I accept the{" "}
                     <Link
                       className="font-medium text-blue-600 hover:underline"
@@ -212,12 +229,19 @@ export default function SignUpPage() {
                   </AuthCheckbox>
                   <Button
                     disabled={
-                      !!serverError ||
+                      !isEmpty(serverError) ||
                       !isValid ||
+                      !isEmpty(errors) ||
                       transition.state === "submitting"
                     }
                   >
-                    Create account
+                    {transition.state === "submitting" ? (
+                      <>
+                        <IconLoading /> Creating
+                      </>
+                    ) : (
+                      "Create account"
+                    )}
                   </Button>
                 </Form>
               </div>

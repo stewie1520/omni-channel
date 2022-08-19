@@ -14,7 +14,10 @@ export interface InputProps
 
 // eslint-disable-next-line react/display-name
 export const Input = React.forwardRef(
-  (props: InputProps, ref: ForwardedRef<HTMLInputElement>) => {
+  (
+    { leadingIcon: LeadingIcon, loading, ...props }: InputProps,
+    ref: ForwardedRef<HTMLInputElement>
+  ) => {
     return (
       <div className={props.className}>
         {props.label && (
@@ -32,7 +35,7 @@ export const Input = React.forwardRef(
             className={classNames(
               "block w-full rounded-md border-gray-200 py-3 px-4 text-sm shadow-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400",
               {
-                "pl-11": !!props.leadingIcon,
+                "pl-11": !!LeadingIcon,
               },
               props.error && [
                 "border-red-500",
@@ -64,12 +67,12 @@ export const Input = React.forwardRef(
               </span>
             </div>
           )}
-          {props.leadingIcon && (
+          {LeadingIcon && (
             <div className="pointer-events-none absolute inset-y-0 left-0 z-20 flex items-center pl-4">
-              <props.leadingIcon className="dark:text-gray-400" />
+              <LeadingIcon className="dark:text-gray-400" />
             </div>
           )}
-          {props.loading && (
+          {loading && (
             <div className="pointer-events-none absolute inset-y-0 right-0 z-20 flex items-center pr-4">
               <IconLoading className="text-blue-500 dark:text-blue-500 dark:text-gray-400" />
             </div>

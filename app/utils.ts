@@ -1,7 +1,7 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { User } from "~/models/user/user.server";
+import type { ComputedUser, User } from "~/models/user/user.server";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -48,9 +48,21 @@ function isUser(user: any): user is User {
   return user && typeof user === "object" && typeof user.email === "string";
 }
 
+function isComputedUser(user: any): user is ComputedUser {
+  return user && typeof user === "object" && typeof user.email === "string";
+}
+
 export function useOptionalUser(): User | undefined {
   const data = useMatchesData("root");
   if (!data || !isUser(data.user)) {
+    return undefined;
+  }
+  return data.user;
+}
+
+export function useOptionalComputedUser(): ComputedUser | undefined {
+  const data = useMatchesData("root");
+  if (!data || !isComputedUser(data.user)) {
     return undefined;
   }
   return data.user;
@@ -64,6 +76,16 @@ export function useUser(): User {
     );
   }
   return maybeUser;
+}
+
+export function useComputedUser(): ComputedUser {
+  const maybeComputedUser = useOptionalComputedUser();
+  if (!maybeComputedUser) {
+    throw new Error(
+      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalComputedUser instead."
+    );
+  }
+  return maybeComputedUser;
 }
 
 export function validateEmail(email: unknown): email is string {

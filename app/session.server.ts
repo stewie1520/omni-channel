@@ -42,6 +42,16 @@ export async function getUser(request: Request) {
   throw await logout(request);
 }
 
+export async function getComputedUser(request: Request) {
+  const userId = await getUserId(request);
+  if (userId === undefined) return null;
+
+  const user = await getUserById(userId);
+  if (user) return user;
+
+  throw await logout(request);
+}
+
 export async function requireUserId(
   request: Request,
   redirectTo: string = new URL(request.url).pathname
