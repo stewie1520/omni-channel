@@ -89,7 +89,7 @@ export const Sidebar = () => {
         <div className="px-6">
           <Link
             className="flex-none text-xl font-semibold dark:text-white"
-            to="#"
+            to="/"
             aria-label="Brand"
           >
             Buzz

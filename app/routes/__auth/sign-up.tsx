@@ -228,6 +228,7 @@ export default function SignUpPage() {
                     </Link>
                   </AuthCheckbox>
                   <Button
+                    variant="gradient-primary"
                     disabled={
                       !isEmpty(serverError) ||
                       !isValid ||

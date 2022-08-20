@@ -31,7 +31,6 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  console.log("loader in root");
   return json<LoaderData>({
     user: await getUser(request),
   });

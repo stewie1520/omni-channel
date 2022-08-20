@@ -12,5 +12,6 @@ module.exports = {
   plugins: [
     require('preline/plugin'),
     require('@tailwindcss/forms'),
+    require('@tailwindcss/line-clamp'),
   ],
 };

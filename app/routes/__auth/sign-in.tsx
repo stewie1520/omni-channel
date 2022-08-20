@@ -141,7 +141,10 @@ export default function LoginPage() {
                   <AuthCheckbox id="remember-me" {...register("rememberMe")}>
                     Remember me
                   </AuthCheckbox>
-                  <Button disabled={transition.state === "submitting"}>
+                  <Button
+                    variant="gradient-primary"
+                    disabled={transition.state === "submitting"}
+                  >
                     {transition.state === "submitting" ? (
                       <>
                         <IconLoading /> Verifying
