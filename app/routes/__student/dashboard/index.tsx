@@ -3,7 +3,7 @@ import { IconUniversity } from "../../../components/icons/university";
 import { useComputedUser } from "~/utils";
 import { TitleSection } from "~/components/typos/section-title";
 import { UpcomingClass } from "~/page-components/dashboard/upcoming-class";
-import { MyClass } from "~/page-components/dashboard/my-class";
+import { MyClassTab } from "~/page-components/dashboard/my-class-tab";
 
 
 export default function DashboardPage () {
@@ -27,7 +27,7 @@ export default function DashboardPage () {
             <UpcomingClass variant={"blue"} minutes={55} assignment={5} students={990} lesson={20} percent={50} category="design" title="Digital: Design Fundamental" />
           </div>
           <TitleSection className="mt-5" icon={IconUniversity}>Your class</TitleSection>
-          <MyClass/>
+          <MyClassTab/>
         </div>
         <div className="flex w-2/3 p-4">
           <div className="w-full p-4 rounded-xl bg-[#f7f8fd]">

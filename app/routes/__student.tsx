@@ -42,7 +42,7 @@ export default function StudentLayoutPage() {
       {/* Sidebar */}
       <Header user={{ email: user.email, id: user.id, name: user.fullName }} />
       <Sidebar />
-      <div className="w-full bg-[#fbfbfb]  lg:pl-64">
+      <div className="w-full lg:pl-64">
         <Outlet></Outlet>
       </div>
     </>

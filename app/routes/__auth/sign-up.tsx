@@ -4,7 +4,7 @@ import IconUser from "@ant-design/icons/UserOutlined";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
 import { Button } from "~/components/buttons/button";
 import { Input } from "~/components/inputs/input";
 import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
@@ -20,6 +20,7 @@ import _debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 import { UserController } from "~/models/user/web/user.controller";
 import { container } from "~/models/container";
+import { HttpInternalServerErrorResponse, HttpResponse } from "~/models/http-response";
 
 type ActionData = {
   firstName?: string;
@@ -40,16 +41,15 @@ export const action: ActionFunction = async ({ request }) => {
       password: formData.get("password")!.toString(),
     };
 
-    // const { error, value } = await createLoginEmailUser.validate(dto);
-
-    // if (error) {
-    //   return json<ActionData>(error);
-    // }
-
     await container.get<UserController>(UserController).createUserByEmail(dto);
     return redirect("/");
-  } catch (err) {
-    return json<ActionData>(err as ActionData);
+  } catch (err: any) {
+    let error = err;
+    if (!(error instanceof HttpResponse)) {
+      error = new HttpInternalServerErrorResponse(err.message as string, { err });
+    }
+
+    return error.toJson();
   }
 };
 

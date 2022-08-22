@@ -1,4 +1,4 @@
-export const MyClass = () => {
+export const MyClassTab = () => {
   return (
     <nav className="-mb-0.5 flex space-x-6 font-light">
       <a

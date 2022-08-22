@@ -14,7 +14,6 @@ import { Input } from "~/components/inputs/input";
 import { LoginSideBar } from "~/page-components/auth/login-sidebar";
 import { AuthCheckbox } from "~/page-components/auth/checkbox";
 import type { ActionFunction } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
@@ -23,6 +22,7 @@ import { AlertError } from "~/components/alerts/error";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
 import { container } from "~/models/container";
 import { UserController } from "~/models/user/web/user.controller";
+import { HttpInternalServerErrorResponse, HttpResponse } from "~/models/http-response";
 
 type ActionData = {
   email?: string;
@@ -32,7 +32,6 @@ type ActionData = {
 
 export const action: ActionFunction = async ({ request }) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     const formData = await request.formData();
     const dto = {
       email: formData.get("email")!.toString(),
@@ -40,19 +39,8 @@ export const action: ActionFunction = async ({ request }) => {
       rememberMe: !!formData.get("rememberMe"),
     };
 
-    // const { error, value } = await container.get<UserController>(). .validate(dto);
-    // if (error) {
-    //   return json<ActionData>(error);
-    // }
-
     const controller = await container.get<UserController>(UserController);
     const user = await controller.verifyLoginByEmail(dto);
-
-    if (!user) {
-      return json<ActionData>({
-        error: "Invalid email or password",
-      });
-    }
 
     return createUserSession({
       request,
@@ -61,7 +49,12 @@ export const action: ActionFunction = async ({ request }) => {
       redirectTo: "/dashboard",
     });
   } catch (err: any) {
-    return json<ActionData>({ error: err.message });
+    let error = err;
+    if (!(error instanceof HttpResponse)) {
+      error = new HttpInternalServerErrorResponse(err.message as string, { err });
+    }
+
+    return error.toJson();
   }
 };
 
