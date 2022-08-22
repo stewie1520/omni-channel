@@ -9,14 +9,14 @@ export async function getUserById(id: User["id"]) {
   const user = await prisma.user.findUnique({ where: { id } });
   if (user === null) return null;
 
-  return new ComputedUser(user);
+  return user;
 }
 
 export async function getUserByEmail(email: User["email"]) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (user === null) return null;
 
-  return new ComputedUser(user);
+  return user;
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
@@ -41,28 +41,4 @@ export async function verifyEmailLogin(email: User["email"], password: string) {
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
-}
-
-export class ComputedUser implements User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-  password: string | null;
-
-  constructor(user: User) {
-    this.id = user.id;
-    this.firstName = user.firstName;
-    this.lastName = user.lastName;
-    this.email = user.email;
-    this.createdAt = user.createdAt;
-    this.updatedAt = user.updatedAt;
-    this.password = user.password;
-  }
-
-  get fullName(): string {
-    return [this.firstName, this.lastName].map((name) => name.trim()).join(" ");
-  }
 }

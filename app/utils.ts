@@ -1,7 +1,8 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { ComputedUser, User } from "~/models/user/user.server";
+import type { User } from "~/models/user/user.server";
+import { ComputedUser } from "~/frontend-models/computed-user";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -62,10 +63,10 @@ export function useOptionalUser(): User | undefined {
 
 export function useOptionalComputedUser(): ComputedUser | undefined {
   const data = useMatchesData("root");
-  if (!data || !isComputedUser(data.user)) {
+  if (!data || !isUser(data.user)) {
     return undefined;
   }
-  return data.user;
+  return new ComputedUser(data.user);
 }
 
 export function useUser(): User {

@@ -16,7 +16,7 @@ export const ItemSideBar = ({ icon: Icon, ...props }: ItemSideBarProps) => {
           classNames(
             "flex items-center gap-x-3 rounded-md py-2 px-2.5 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 dark:hover:text-white",
             {
-              "bg-gray-100 text-blue-400 text-slate-700 dark:bg-slate-700 dark:text-white":
+              "bg-gray-100 text-blue-400 text-blue-700 dark:bg-slate-700 dark:text-white":
                 props.active || isActive,
             }
           )

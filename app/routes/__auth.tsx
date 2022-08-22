@@ -28,10 +28,9 @@ export default function AuthLayout() {
   return (
     <>
       <div className="h-full">
-        <div
-          className="absolute -z-10 h-full w-full bg-no-repeat"
-          style={{ backgroundImage: "url(images/wave.svg) " }}
-        ></div>
+        <div className="absolute top-0 left-0 -z-10 h-full w-full">
+          <img draggable="false" src="images/wave.svg" alt="wave" />
+        </div>
         <Outlet></Outlet>
       </div>
     </>

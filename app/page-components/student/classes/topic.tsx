@@ -29,7 +29,7 @@ export const TopicCard = (props: TopicCardProps) => {
     <>
       <div
         className={classNames(
-          "relative flex w-1/4 flex-none cursor-pointer flex-col overflow-hidden rounded-xl p-4 hover:shadow-md md:p-5",
+          "relative flex w-1/4 flex-none cursor-pointer select-none flex-col overflow-hidden rounded-xl p-4 hover:shadow-md md:p-5",
           bgColors
         )}
       >

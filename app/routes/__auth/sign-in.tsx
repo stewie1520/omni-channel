@@ -56,7 +56,7 @@ export const action: ActionFunction = async ({ request }) => {
       request,
       userId: user.id,
       remember: value!.rememberMe,
-      redirectTo: "/me",
+      redirectTo: "/dashboard",
     });
   } catch (err: any) {
     return json<ActionData>({ error: err.message });

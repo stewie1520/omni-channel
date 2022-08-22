@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { IconArrowLeft } from "~/components/icons/arrow-left";
+import { IconArrowRight } from "~/components/icons/arrow-right";
 import { TopicCard } from "./topic";
 
 export const CarouselTopics = (props: any) => {
@@ -50,48 +52,29 @@ export const CarouselTopics = (props: any) => {
   return (
     <div className="relative overflow-hidden">
       <div className="top left absolute flex h-full w-full justify-between">
-        <button
-          onClick={movePrev}
-          className="z-10 m-0 h-full w-10 p-0 text-center text-white opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
-          disabled={isDisabled("prev")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="-ml-5 h-12 w-20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+        {isDisabled("prev") ? (
+          <div className="z-10 h-full w-10"></div>
+        ) : (
+          <button
+            onClick={movePrev}
+            className="z-10 m-0 h-full w-10 self-start p-0 text-center text-white opacity-75 transition-all duration-300 ease-in-out hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span className="sr-only">Prev</span>
-        </button>
-        <button
-          onClick={moveNext}
-          className="z-10 m-0 h-full w-10 p-0 text-center text-white opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
-          disabled={isDisabled("next")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="-ml-5 h-12 w-20"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+            <IconArrowLeft />
+            <span className="sr-only">Prev</span>
+          </button>
+        )}
+        {isDisabled("next") ? (
+          <div className="z-10 h-full w-10"></div>
+        ) : (
+          <button
+            onClick={moveNext}
+            className="z-10 m-0 h-full w-10 p-0 text-center text-white opacity-75 transition-all duration-300 ease-in-out hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
+            disabled={isDisabled("next")}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-          <span className="sr-only">Next</span>
-        </button>
+            <IconArrowRight />
+            <span className="sr-only">Next</span>
+          </button>
+        )}
       </div>
       <div
         ref={carousel}

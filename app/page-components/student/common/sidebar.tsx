@@ -5,7 +5,7 @@ import { ItemSideBar } from "./buttons/item-sidebar";
 
 const items: { to: string; text: string; icon: any }[] = [
   {
-    to: "/me",
+    to: "/dashboard",
     icon: IconDashboard,
     text: "Dashboard",
   },
@@ -104,7 +104,6 @@ export const Sidebar = () => {
                   to={item.to}
                   text={item.text}
                   icon={item.icon}
-                  active={false}
                 />
               </li>
             ))}
