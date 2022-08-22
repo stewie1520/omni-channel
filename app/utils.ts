@@ -1,8 +1,8 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { User } from "~/models/user/user.server";
 import { ComputedUser } from "~/frontend-models/computed-user";
+import { UserEntity } from "~/core/domain/entities/user.entity";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -45,7 +45,7 @@ export function useMatchesData(
   return route?.data;
 }
 
-function isUser(user: any): user is User {
+function isUser(user: any): user is UserEntity {
   return user && typeof user === "object" && typeof user.email === "string";
 }
 
@@ -53,7 +53,7 @@ function isComputedUser(user: any): user is ComputedUser {
   return user && typeof user === "object" && typeof user.email === "string";
 }
 
-export function useOptionalUser(): User | undefined {
+export function useOptionalUser(): UserEntity | undefined {
   const data = useMatchesData("root");
   if (!data || !isUser(data.user)) {
     return undefined;
@@ -69,7 +69,7 @@ export function useOptionalComputedUser(): ComputedUser | undefined {
   return new ComputedUser(data.user);
 }
 
-export function useUser(): User {
+export function useUser(): UserEntity {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
     throw new Error(

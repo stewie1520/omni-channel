@@ -18,10 +18,11 @@ import { json } from "@remix-run/server-runtime";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
-import { verifySignInEmail } from "~/models/user/verify-sign-in-email.server";
 import { createUserSession } from "~/session.server";
 import { AlertError } from "~/components/alerts/error";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
+import { container } from "~/models/container";
+import { UserController } from "~/models/user/web/user.controller";
 
 type ActionData = {
   email?: string;
@@ -34,17 +35,18 @@ export const action: ActionFunction = async ({ request }) => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     const formData = await request.formData();
     const dto = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      rememberMe: formData.get("rememberMe"),
+      email: formData.get("email")!.toString(),
+      password: formData.get("password")!.toString(),
+      rememberMe: !!formData.get("rememberMe"),
     };
 
-    const { error, value } = await verifySignInEmail.validate(dto);
-    if (error) {
-      return json<ActionData>(error);
-    }
+    // const { error, value } = await container.get<UserController>(). .validate(dto);
+    // if (error) {
+    //   return json<ActionData>(error);
+    // }
 
-    const user = await verifySignInEmail(value!);
+    const controller = await container.get<UserController>(UserController);
+    const user = await controller.verifyLoginByEmail(dto);
 
     if (!user) {
       return json<ActionData>({
@@ -55,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
     return createUserSession({
       request,
       userId: user.id,
-      remember: value!.rememberMe,
+      remember: dto.rememberMe,
       redirectTo: "/dashboard",
     });
   } catch (err: any) {

@@ -59,4 +59,6 @@ function getClient() {
   return client;
 }
 
+export const PRISMA_CLIENT = Symbol("PRISMA_CLIENT");
+
 export { prisma };

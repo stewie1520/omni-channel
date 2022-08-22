@@ -1,8 +1,9 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
+import { UserEntity } from "~/core/domain/entities/user.entity";
+import { container } from "~/models/container";
+import { UserRepository } from "~/core/application/store/user.repository";
 
-import type { User } from "~/models/user/user.server";
-import { getUserById } from "~/models/user/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -26,17 +27,16 @@ export async function getSession(request: Request) {
 
 export async function getUserId(
   request: Request
-): Promise<User["id"] | undefined> {
+): Promise<UserEntity["id"] | undefined> {
   const session = await getSession(request);
-  const userId = session.get(USER_SESSION_KEY);
-  return userId;
+  return session.get(USER_SESSION_KEY);
 }
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
 
-  const user = await getUserById(userId);
+  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
   if (user) return user;
 
   throw await logout(request);
@@ -46,7 +46,7 @@ export async function getComputedUser(request: Request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
 
-  const user = await getUserById(userId);
+  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
   if (user) return user;
 
   throw await logout(request);
@@ -67,7 +67,7 @@ export async function requireUserId(
 export async function requireUser(request: Request) {
   const userId = await requireUserId(request);
 
-  const user = await getUserById(userId);
+  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
   if (user) return user;
 
   throw await logout(request);

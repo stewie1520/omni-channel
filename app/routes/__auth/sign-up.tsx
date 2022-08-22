@@ -7,7 +7,6 @@ import type { ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import { Button } from "~/components/buttons/button";
 import { Input } from "~/components/inputs/input";
-import { createLoginEmailUser } from "~/models/user/create-login-email-user.server";
 import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
 import { AuthCheckbox } from "~/page-components/auth/checkbox";
 import { SignUpSideBar } from "~/page-components/auth/sign-up-sidebar";
@@ -19,6 +18,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useEffect, useState } from "react";
 import _debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
+import { UserController } from "~/models/user/web/user.controller";
+import { container } from "~/models/container";
 
 type ActionData = {
   firstName?: string;
@@ -33,19 +34,19 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
 
     const dto = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      email: formData.get("email"),
-      password: formData.get("password"),
+      firstName: formData.get("firstName")!.toString(),
+      lastName: formData.get("lastName")!.toString(),
+      email: formData.get("email")!.toString(),
+      password: formData.get("password")!.toString(),
     };
 
-    const { error, value } = await createLoginEmailUser.validate(dto);
+    // const { error, value } = await createLoginEmailUser.validate(dto);
 
-    if (error) {
-      return json<ActionData>(error);
-    }
+    // if (error) {
+    //   return json<ActionData>(error);
+    // }
 
-    await createLoginEmailUser(value!);
+    await container.get<UserController>(UserController).createUserByEmail(dto);
     return redirect("/");
   } catch (err) {
     return json<ActionData>(err as ActionData);
