@@ -1,9 +1,7 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { container } from "~/models/container";
-import { AccountService } from "./core/application/service/account.service";
 import { StudentService } from "./core/application/service/student.service";
-import { StudentRepository } from "./core/application/store/student.repository";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
