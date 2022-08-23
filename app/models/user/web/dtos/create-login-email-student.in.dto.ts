@@ -1,4 +1,4 @@
-export interface CreateLoginEmailUserInDto {
+export interface CreateLoginEmailStudentInDto {
   firstName: string;
   lastName: string;
   email: string;

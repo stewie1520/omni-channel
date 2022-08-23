@@ -1,9 +1,9 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { UserEntity } from "~/core/domain/entities/user.entity";
 import { container } from "~/models/container";
-import { UserRepository } from "~/core/application/store/user.repository";
-
+import { AccountService } from "./core/application/service/account.service";
+import { StudentService } from "./core/application/service/student.service";
+import { StudentRepository } from "./core/application/store/student.repository";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -18,62 +18,53 @@ export const sessionStorage = createCookieSessionStorage({
   },
 });
 
-const USER_SESSION_KEY = "userId";
+const AUTH_SESSION_KEY = "auth_session_id";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
 }
 
-export async function getUserId(
+export async function getStudentId(
   request: Request
-): Promise<UserEntity["id"] | undefined> {
+): Promise<string | undefined> {
   const session = await getSession(request);
-  return session.get(USER_SESSION_KEY);
+  return session.get(AUTH_SESSION_KEY);
 }
 
-export async function getUser(request: Request) {
-  const userId = await getUserId(request);
-  if (userId === undefined) return null;
+export async function getStudent(request: Request) {
+  const studentId = await getStudentId(request);
+  if (studentId === undefined) return null;
+  const student = await container
+    .get<StudentService>(StudentService)
+    .findById(studentId);
 
-  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
-  if (user) return user;
-
-  throw await logout(request);
+  return student;
 }
 
-export async function getComputedUser(request: Request) {
-  const userId = await getUserId(request);
-  if (userId === undefined) return null;
-
-  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
-  if (user) return user;
-
-  throw await logout(request);
-}
-
-export async function requireUserId(
+export async function requireStudentId(
   request: Request,
   redirectTo: string = new URL(request.url).pathname
 ) {
-  const userId = await getUserId(request);
-  if (!userId) {
+  const studentId = await getStudentId(request);
+  if (!studentId) {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
-    throw redirect(`/login?${searchParams}`);
+    throw redirect(`/sign-in?${searchParams}`);
   }
-  return userId;
+  return studentId;
 }
 
-export async function requireUser(request: Request) {
-  const userId = await requireUserId(request);
-
-  const user = await container.get<UserRepository>(UserRepository).getUserById(userId);
-  if (user) return user;
+export async function requireStudent(request: Request) {
+  const studentId = await requireStudentId(request);
+  const student = await container
+    .get<StudentService>(StudentService)
+    .findById(studentId);
+  if (student) return student;
 
   throw await logout(request);
 }
 
-export async function createUserSession({
+export async function createStudentSession({
   request,
   userId,
   remember,
@@ -85,7 +76,7 @@ export async function createUserSession({
   redirectTo: string;
 }) {
   const session = await getSession(request);
-  session.set(USER_SESSION_KEY, userId);
+  session.set(AUTH_SESSION_KEY, userId);
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {

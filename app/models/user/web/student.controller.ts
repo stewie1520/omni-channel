@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { AccountService } from "~/core/application/service/account.service";
-import type { CreateLoginEmailUserInDto } from "~/models/user/web/dtos/create-login-email-user.in.dto";
-import type { CreateLoginEmailUserOutDto } from "~/models/user/web/dtos/create-login-email-user.out.dto";
+import type { CreateLoginEmailStudentInDto } from "~/models/user/web/dtos/create-login-email-student.in.dto";
+import type { CreateLoginEmailStudentOutDto } from "~/models/user/web/dtos/create-login-email-user.out.dto";
 import type { VerifyLoginByEmailInDto } from "~/models/user/web/dtos/verify-login-by-email.in.dto";
 import type { VerifyLoginByEmailOutDto } from "~/models/user/web/dtos/verify-login-by-email.out.dto";
 import { HttpNotFoundResponse } from "~/models/http-response";
@@ -9,7 +9,7 @@ import * as yup from "yup";
 import { WebController } from "~/libs/web-controller/web-controller";
 
 @injectable()
-export class UserController extends WebController {
+export class StudentController extends WebController {
   constructor(@inject(AccountService) private accountService: AccountService) {
     super();
   }
@@ -18,18 +18,23 @@ export class UserController extends WebController {
     return this.accountService.checkEmailTaken(email);
   }
 
-  async createUserByEmail(dto: CreateLoginEmailUserInDto): Promise<CreateLoginEmailUserOutDto> {
+  async createByEmail(
+    dto: CreateLoginEmailStudentInDto
+  ): Promise<CreateLoginEmailStudentOutDto> {
     const validationSchema = yup.object().shape({
       firstName: yup.string().required(),
       lastName: yup.string().required(),
       email: yup.string().email().required(),
       password: yup.string().required(),
     });
+
     await this.validate(dto, validationSchema);
-    return this.accountService.createUserByEmail(dto);
+    return this.accountService.createStudentByEmail(dto);
   }
 
-  async verifyLoginByEmail(dto: VerifyLoginByEmailInDto): Promise<VerifyLoginByEmailOutDto> {
+  async verifyLoginByEmail(
+    dto: VerifyLoginByEmailInDto
+  ): Promise<VerifyLoginByEmailOutDto> {
     const validationSchema = yup.object().shape({
       email: yup.string().email().required(),
       password: yup.string().required(),
@@ -38,12 +43,16 @@ export class UserController extends WebController {
 
     await this.validate(dto, validationSchema);
 
-    const user = await this.accountService.verifyLoginByEmail(dto);
-    if (!user) {
-      throw new HttpNotFoundResponse("User not found", { email: dto.email });
+    const accountStudent = await this.accountService.verifyStudentByEmail(dto);
+    if (!accountStudent) {
+      throw new HttpNotFoundResponse("Student not found", { email: dto.email });
     }
 
-    const { password, ...userWithNoPassword } = user;
-    return userWithNoPassword;
+    return {
+      id: accountStudent.student.id.toString(),
+      email: accountStudent.email,
+      firstName: accountStudent.student.firstName,
+      lastName: accountStudent.student.lastName,
+    };
   }
 }

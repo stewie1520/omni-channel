@@ -1,15 +1,20 @@
-import { ContainerModule } from 'inversify';
-import { HASH_SERVICE, HashService } from "~/core/application/service/hash.service";
+import { ContainerModule } from "inversify";
+import type { HashService } from "~/core/application/service/hash.service";
+import { HASH_SERVICE } from "~/core/application/service/hash.service";
 import { BcryptHashService } from "~/models/user/service/bcrypt-hash.service";
 import { AccountService } from "~/core/application/service/account.service";
-import { UserRepository } from "~/core/application/store/user.repository";
-import { PostgresUserRepository } from "~/models/user/store/postgres-user.repository";
-import { UserController } from "~/models/user/web/user.controller";
+import { AccountRepository } from "~/core/application/store/account.repository";
+import { PostgresAccountRepository } from "~/models/user/store/postgres-account.repository";
+import { StudentRepository } from "~/core/application/store/student.repository";
+import { PostgresStudentRepository } from "~/models/user/store/postgres-student.repository";
+import { StudentController } from "~/models/user/web/student.controller";
+import { StudentService } from "~/core/application/service/student.service";
 
 export const userModule = new ContainerModule((bind) => {
   bind<HashService>(HASH_SERVICE).to(BcryptHashService);
-  bind<UserRepository>(UserRepository).to(PostgresUserRepository);
+  bind<AccountRepository>(AccountRepository).to(PostgresAccountRepository);
+  bind<StudentRepository>(StudentRepository).to(PostgresStudentRepository);
+  bind<StudentController>(StudentController).toSelf();
   bind<AccountService>(AccountService).toSelf();
-  bind<UserController>(UserController).toSelf();
+  bind<StudentService>(StudentService).toSelf();
 });
-

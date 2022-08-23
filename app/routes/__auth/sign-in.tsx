@@ -17,12 +17,15 @@ import type { ActionFunction } from "@remix-run/server-runtime";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
-import { createUserSession } from "~/session.server";
+import { createStudentSession } from "~/session.server";
 import { AlertError } from "~/components/alerts/error";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
 import { container } from "~/models/container";
-import { UserController } from "~/models/user/web/user.controller";
-import { HttpInternalServerErrorResponse, HttpResponse } from "~/models/http-response";
+import { StudentController } from "~/models/user/web/student.controller";
+import {
+  HttpInternalServerErrorResponse,
+  HttpResponse,
+} from "~/models/http-response";
 
 type ActionData = {
   email?: string;
@@ -39,10 +42,12 @@ export const action: ActionFunction = async ({ request }) => {
       rememberMe: !!formData.get("rememberMe"),
     };
 
-    const controller = await container.get<UserController>(UserController);
+    const controller = await container.get<StudentController>(
+      StudentController
+    );
     const user = await controller.verifyLoginByEmail(dto);
 
-    return createUserSession({
+    return createStudentSession({
       request,
       userId: user.id,
       remember: dto.rememberMe,
@@ -51,7 +56,9 @@ export const action: ActionFunction = async ({ request }) => {
   } catch (err: any) {
     let error = err;
     if (!(error instanceof HttpResponse)) {
-      error = new HttpInternalServerErrorResponse(err.message as string, { err });
+      error = new HttpInternalServerErrorResponse(err.message as string, {
+        err,
+      });
     }
 
     return error.toJson();

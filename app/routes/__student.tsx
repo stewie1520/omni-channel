@@ -1,20 +1,13 @@
-import { useEffect, useRef } from "react";
 import { Outlet, useTransition } from "@remix-run/react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { Header } from "~/page-components/student/common/header";
-import { Sidebar } from "~/page-components/student/common/sidebar";
+import { useEffect, useRef } from "react";
 import type { LoadingBarRef } from "react-top-loading-bar";
 import LoadingBar from "react-top-loading-bar";
-import { getUserId } from "~/session.server";
-import { useComputedUser } from "~/utils";
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (!userId) return redirect("/sign-in");
-  return json({});
-};
+import { Header } from "~/page-components/student/common/header";
+import { Sidebar } from "~/page-components/student/common/sidebar";
+import { requireStudentId } from "~/session.server";
+import { useComputedStudent } from "~/utils";
 
 export const meta: MetaFunction = () => {
   return {
@@ -22,11 +15,15 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const studentId = await requireStudentId(request);
+  return json({ studentId });
+};
+
 export default function StudentLayoutPage() {
   const loadingBarRef = useRef(null);
-  const user = useComputedUser();
+  const student = useComputedStudent();
   const transition = useTransition();
-
   useEffect(() => {
     if (loadingBarRef.current === null) return;
     if (transition.state !== "idle") {
@@ -40,7 +37,13 @@ export default function StudentLayoutPage() {
     <>
       <LoadingBar color="#3498db" ref={loadingBarRef} />
       {/* Sidebar */}
-      <Header user={{ email: user.email, id: user.id, name: user.fullName }} />
+      <Header
+        user={{
+          email: student.account.email,
+          id: student.id,
+          name: student.fullName,
+        }}
+      />
       <Sidebar />
       <div className="w-full lg:pl-64">
         <Outlet></Outlet>

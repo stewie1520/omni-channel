@@ -18,9 +18,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useEffect, useState } from "react";
 import _debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
-import { UserController } from "~/models/user/web/user.controller";
+import { StudentController } from "~/models/user/web/student.controller";
 import { container } from "~/models/container";
-import { HttpInternalServerErrorResponse, HttpResponse } from "~/models/http-response";
+import {
+  HttpInternalServerErrorResponse,
+  HttpResponse,
+} from "~/models/http-response";
 
 type ActionData = {
   firstName?: string;
@@ -41,12 +44,16 @@ export const action: ActionFunction = async ({ request }) => {
       password: formData.get("password")!.toString(),
     };
 
-    await container.get<UserController>(UserController).createUserByEmail(dto);
+    await container
+      .get<StudentController>(StudentController)
+      .createByEmail(dto);
     return redirect("/");
   } catch (err: any) {
     let error = err;
     if (!(error instanceof HttpResponse)) {
-      error = new HttpInternalServerErrorResponse(err.message as string, { err });
+      error = new HttpInternalServerErrorResponse(err.message as string, {
+        err,
+      });
     }
 
     return error.toJson();

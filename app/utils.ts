@@ -1,8 +1,8 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import { ComputedUser } from "~/frontend-models/computed-user";
-import { UserEntity } from "~/core/domain/entities/user.entity";
+import type { Student } from "~/frontend-models/computed-student";
+import { ComputedStudent } from "~/frontend-models/computed-student";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -45,50 +45,57 @@ export function useMatchesData(
   return route?.data;
 }
 
-function isUser(user: any): user is UserEntity {
-  return user && typeof user === "object" && typeof user.email === "string";
+function isStudent(student: any): student is Student {
+  return (
+    student &&
+    typeof student === "object" &&
+    student.firstName &&
+    student.lastName
+  );
 }
 
-function isComputedUser(user: any): user is ComputedUser {
-  return user && typeof user === "object" && typeof user.email === "string";
+function isComputedStudent(student: any): student is ComputedStudent {
+  return (
+    student &&
+    typeof student === "object" &&
+    typeof student.fullName === "string"
+  );
 }
 
-export function useOptionalUser(): UserEntity | undefined {
+export function useOptionalStudent(): Student | undefined {
   const data = useMatchesData("root");
-  if (!data || !isUser(data.user)) {
+  if (!data || !isStudent(data.student)) {
     return undefined;
   }
-  return data.user;
+
+  return data.student;
 }
 
-export function useOptionalComputedUser(): ComputedUser | undefined {
+export function useOptionalComputedStudent(): ComputedStudent | undefined {
   const data = useMatchesData("root");
-  if (!data || !isUser(data.user)) {
+
+  if (!data || !isStudent(data.student)) {
     return undefined;
   }
-  return new ComputedUser(data.user);
+  return new ComputedStudent(data.student);
 }
 
-export function useUser(): UserEntity {
-  const maybeUser = useOptionalUser();
-  if (!maybeUser) {
+export function useStudent(): Student {
+  const maybeStudent = useOptionalStudent();
+  if (!maybeStudent) {
     throw new Error(
-      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
+      "No student found in root loader, but student is required by useStudent. If student is optional, try useOptionalStudent instead."
     );
   }
-  return maybeUser;
+  return maybeStudent;
 }
 
-export function useComputedUser(): ComputedUser {
-  const maybeComputedUser = useOptionalComputedUser();
-  if (!maybeComputedUser) {
+export function useComputedStudent(): ComputedStudent {
+  const maybeComputedStudent = useOptionalComputedStudent();
+  if (!maybeComputedStudent) {
     throw new Error(
-      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalComputedUser instead."
+      "No computed student found in root loader, but computed student is required by useComputedStudent. If student is optional, try useOptionalComputedStudent instead."
     );
   }
-  return maybeComputedUser;
-}
-
-export function validateEmail(email: unknown): email is string {
-  return typeof email === "string" && email.length > 3 && email.includes("@");
+  return maybeComputedStudent;
 }

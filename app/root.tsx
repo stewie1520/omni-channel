@@ -12,10 +12,10 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import 'reflect-metadata';
+import "reflect-metadata";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { getUser } from "./session.server";
+import { getStudent } from "./session.server";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -28,12 +28,13 @@ export const meta: MetaFunction = () => ({
 });
 
 type LoaderData = {
-  user: Awaited<ReturnType<typeof getUser>>;
+  student: Awaited<ReturnType<typeof getStudent>>;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const student = await getStudent(request);
   return json<LoaderData>({
-    user: await getUser(request),
+    student,
   });
 };
 

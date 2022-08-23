@@ -1,52 +1,97 @@
-import { UserRepository } from "~/core/application/store/user.repository";
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
+import type {
+  CreateLoginEmailStudentRequestDto,
+  CreateLoginEmailStudentResponseDto,
+} from "~/core/application/dtos/create-login-email-student.dto";
 import type { HashService } from "~/core/application/service/hash.service";
 import { HASH_SERVICE } from "~/core/application/service/hash.service";
+import { AccountRepository } from "~/core/application/store/account.repository";
+import { UniqueIdentifier } from "~/core/domain/entities/unique-identifier";
 import type {
-  CreateLoginEmailUserRequestDto,
-  CreateLoginEmailUserResponseDto
-} from "~/core/application/dtos/create-login-email-user.dto";
-import type { UserEntity } from "~/core/domain/entities/user.entity";
+  VerifyLoginEmailStudentRequestDto,
+  VerifyLoginEmailStudentResponseDto,
+} from "../dtos/verify-login-email-student.dto";
+import { StudentRepository } from "../store/student.repository";
 
 @injectable()
 export class AccountService {
-  constructor(@inject(UserRepository) private userRepository: UserRepository, @inject(HASH_SERVICE) private hashService: HashService) {}
+  constructor(
+    @inject(AccountRepository) private accountRepository: AccountRepository,
+    @inject(StudentRepository) private studentRepository: StudentRepository,
+    @inject(HASH_SERVICE) private hashService: HashService
+  ) {}
 
   async checkEmailTaken(email: string): Promise<boolean> {
-    const user = await this.userRepository.getUserByEmail(email);
-    return user !== null;
+    return this.accountRepository.isEmailTaken(email);
   }
 
-  async createUserByEmail(dto: CreateLoginEmailUserRequestDto): Promise<CreateLoginEmailUserResponseDto> {
+  async createStudentByEmail(
+    dto: CreateLoginEmailStudentRequestDto
+  ): Promise<CreateLoginEmailStudentResponseDto> {
     const hashedPassword = await this.hashService.hash(dto.password);
 
-    const user = await this.userRepository.createUserByEmail({
+    const account = await this.accountRepository.createByEmail({
       email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
       password: hashedPassword,
+      id: new UniqueIdentifier().toString(),
     });
 
+    const student = await this.studentRepository.createNewStudentWithAccount(
+      {
+        firstName: dto.firstName,
+        avatarUrl: dto.avatarUrl,
+        lastName: dto.lastName,
+      },
+      account
+    );
+
     return {
-      id: user.id,
+      id: student.id.toString(),
     };
-  } catch (err: any) {
-    throw { error: err };
   }
 
-  async verifyLoginByEmail(request: { email: string, password: string }): Promise<UserEntity | null> {
-    const userWithPassword = await this.userRepository.getUserByEmail(request.email);
+  async verifyStudentByEmail(
+    request: VerifyLoginEmailStudentRequestDto
+  ): Promise<VerifyLoginEmailStudentResponseDto | null> {
+    const accountStudent = await this.accountRepository.getByEmail(
+      request.email,
+      {
+        withStudent: true,
+      }
+    );
 
-    if (!userWithPassword || !userWithPassword.password) {
+    if (
+      !accountStudent ||
+      !accountStudent.password ||
+      !accountStudent.student
+    ) {
       return null;
     }
 
-    const isValid = await this.hashService.compare(request.password, userWithPassword.password);
+    const isValid = await this.hashService.compare(
+      request.password,
+      accountStudent.password
+    );
 
     if (!isValid) {
       return null;
     }
 
-    return userWithPassword;
+    return {
+      id: accountStudent.id.toString(),
+      createdAt: accountStudent.createdAt,
+      email: accountStudent.email,
+      provider: accountStudent.provider,
+      updatedAt: accountStudent.updatedAt,
+      idOnProvider: accountStudent.idOnProvider || undefined,
+      student: {
+        id: accountStudent.student.id.toString(),
+        firstName: accountStudent.student.firstName,
+        lastName: accountStudent.student.lastName,
+        createdAt: accountStudent.student.createdAt,
+        updatedAt: accountStudent.student.updatedAt,
+        avatarUrl: accountStudent.student.avatarUrl,
+      },
+    };
   }
 }
