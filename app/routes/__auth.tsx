@@ -3,7 +3,7 @@ import type { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 
-import { getStudent } from "~/session.server";
+import { getAccountId } from "~/session.server";
 
 type AuthLayoutData = {
   redirect: string;
@@ -11,16 +11,17 @@ type AuthLayoutData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   try {
-    const student = await getStudent(request);
-    if (student) {
+    const accountId = await getAccountId(request);
+    if (accountId) {
       return redirect("/");
     }
-  } catch (err) {
-    console.log(err);
-  } finally {
+
     return json<AuthLayoutData>({
       redirect: "/",
     });
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 };
 

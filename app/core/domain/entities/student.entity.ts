@@ -15,6 +15,11 @@ export class StudentEntity extends BaseEntity<StudentEntityProps> {
   get account(): AccountEntity {
     return this.props.account;
   }
+
+  set account(acc: AccountEntity) {
+    this._props.account = acc;
+  }
+
   get firstName(): string {
     return this.props.firstName;
   }

@@ -1,8 +1,7 @@
-export interface CreateLoginEmailStudentRequestDto {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
+import type { CreateLoginEmailAccountRequestDto } from "./create-login-email-account.dto";
+
+export interface CreateLoginEmailStudentRequestDto
+  extends CreateLoginEmailAccountRequestDto {
   avatarUrl?: string;
 }
 

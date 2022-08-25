@@ -15,7 +15,7 @@ import {
 import "reflect-metadata";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { getStudent } from "./session.server";
+import { getAccount } from "./session.server";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -28,13 +28,13 @@ export const meta: MetaFunction = () => ({
 });
 
 type LoaderData = {
-  student: Awaited<ReturnType<typeof getStudent>>;
+  account: Awaited<ReturnType<typeof getAccount>>;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const student = await getStudent(request);
+  const account = await getAccount(request);
   return json<LoaderData>({
-    student,
+    account,
   });
 };
 

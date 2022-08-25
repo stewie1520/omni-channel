@@ -14,7 +14,7 @@ export abstract class BaseEntity<TProps extends BaseEntityProps> {
     this._id = id || new UniqueIdentifier();
   }
 
-  private _props: TProps;
+  protected _props: TProps;
   private readonly _id: UniqueIdentifier;
 
   get id() {

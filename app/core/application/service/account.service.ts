@@ -8,6 +8,14 @@ import { HASH_SERVICE } from "~/core/application/service/hash.service";
 import { AccountRepository } from "~/core/application/store/account.repository";
 import { UniqueIdentifier } from "~/core/domain/entities/unique-identifier";
 import type {
+  CreateLoginEmailAccountRequestDto,
+  CreateLoginEmailAccountResponseDto,
+} from "../dtos/create-login-email-account.dto";
+import type {
+  VerifyLoginEmailAccountRequestDto,
+  VerifyLoginEmailAccountResponseDto,
+} from "../dtos/verify-login-email-account.dto";
+import type {
   VerifyLoginEmailStudentRequestDto,
   VerifyLoginEmailStudentResponseDto,
 } from "../dtos/verify-login-email-student.dto";
@@ -25,12 +33,64 @@ export class AccountService {
     return this.accountRepository.isEmailTaken(email);
   }
 
+  async findById(id: string) {
+    return this.accountRepository.getById(id);
+  }
+
+  async createByEmail(
+    dto: CreateLoginEmailAccountRequestDto
+  ): Promise<CreateLoginEmailAccountResponseDto> {
+    const hashedPassword = await this.hashService.hash(dto.password);
+
+    const account = await this.accountRepository.createByEmail({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      password: hashedPassword,
+      id: new UniqueIdentifier().toString(),
+    });
+
+    return {
+      id: account.id.toString(),
+    };
+  }
+
+  async verifyByEmail(
+    request: VerifyLoginEmailAccountRequestDto
+  ): Promise<VerifyLoginEmailAccountResponseDto | null> {
+    const account = await this.accountRepository.getByEmail(request.email);
+
+    if (!account || !account.password) {
+      return null;
+    }
+
+    const isValid = await this.hashService.compare(
+      request.password,
+      account.password
+    );
+
+    if (!isValid) {
+      return null;
+    }
+
+    return {
+      id: account.id.toString(),
+      createdAt: account.createdAt,
+      email: account.email,
+      updatedAt: account.updatedAt,
+      firstName: account.firstName,
+      lastName: account.lastName,
+    };
+  }
+
   async createStudentByEmail(
     dto: CreateLoginEmailStudentRequestDto
   ): Promise<CreateLoginEmailStudentResponseDto> {
     const hashedPassword = await this.hashService.hash(dto.password);
 
     const account = await this.accountRepository.createByEmail({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
       email: dto.email,
       password: hashedPassword,
       id: new UniqueIdentifier().toString(),
@@ -47,51 +107,6 @@ export class AccountService {
 
     return {
       id: student.id.toString(),
-    };
-  }
-
-  async verifyStudentByEmail(
-    request: VerifyLoginEmailStudentRequestDto
-  ): Promise<VerifyLoginEmailStudentResponseDto | null> {
-    const accountStudent = await this.accountRepository.getByEmail(
-      request.email,
-      {
-        withStudent: true,
-      }
-    );
-
-    if (
-      !accountStudent ||
-      !accountStudent.password ||
-      !accountStudent.student
-    ) {
-      return null;
-    }
-
-    const isValid = await this.hashService.compare(
-      request.password,
-      accountStudent.password
-    );
-
-    if (!isValid) {
-      return null;
-    }
-
-    return {
-      id: accountStudent.id.toString(),
-      createdAt: accountStudent.createdAt,
-      email: accountStudent.email,
-      provider: accountStudent.provider,
-      updatedAt: accountStudent.updatedAt,
-      idOnProvider: accountStudent.idOnProvider || undefined,
-      student: {
-        id: accountStudent.student.id.toString(),
-        firstName: accountStudent.student.firstName,
-        lastName: accountStudent.student.lastName,
-        createdAt: accountStudent.student.createdAt,
-        updatedAt: accountStudent.student.updatedAt,
-        avatarUrl: accountStudent.student.avatarUrl,
-      },
     };
   }
 }

@@ -9,12 +9,14 @@ import { StudentRepository } from "~/core/application/store/student.repository";
 import { PostgresStudentRepository } from "~/models/user/store/postgres-student.repository";
 import { StudentController } from "~/models/user/web/student.controller";
 import { StudentService } from "~/core/application/service/student.service";
+import { AccountController } from "./web/account.controller";
 
 export const userModule = new ContainerModule((bind) => {
   bind<HashService>(HASH_SERVICE).to(BcryptHashService);
   bind<AccountRepository>(AccountRepository).to(PostgresAccountRepository);
   bind<StudentRepository>(StudentRepository).to(PostgresStudentRepository);
   bind<StudentController>(StudentController).toSelf();
+  bind<AccountController>(AccountController).toSelf();
   bind<AccountService>(AccountService).toSelf();
   bind<StudentService>(StudentService).toSelf();
 });

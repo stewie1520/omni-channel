@@ -17,15 +17,15 @@ import type { ActionFunction } from "@remix-run/server-runtime";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
-import { createStudentSession } from "~/session.server";
+import { createAccountSession } from "~/session.server";
 import { AlertError } from "~/components/alerts/error";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
 import { container } from "~/models/container";
-import { StudentController } from "~/models/user/web/student.controller";
 import {
   HttpInternalServerErrorResponse,
   HttpResponse,
 } from "~/models/http-response";
+import { AccountController } from "~/models/user/web/account.controller";
 
 type ActionData = {
   email?: string;
@@ -42,14 +42,14 @@ export const action: ActionFunction = async ({ request }) => {
       rememberMe: !!formData.get("rememberMe"),
     };
 
-    const controller = await container.get<StudentController>(
-      StudentController
+    const controller = await container.get<AccountController>(
+      AccountController
     );
-    const user = await controller.verifyLoginByEmail(dto);
+    const account = await controller.verifyLoginByEmail(dto);
 
-    return createStudentSession({
+    return createAccountSession({
       request,
-      userId: user.id,
+      accountId: account.id,
       remember: dto.rememberMe,
       redirectTo: "/dashboard",
     });

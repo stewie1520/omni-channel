@@ -18,12 +18,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useEffect, useState } from "react";
 import _debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
-import { StudentController } from "~/models/user/web/student.controller";
 import { container } from "~/models/container";
 import {
   HttpInternalServerErrorResponse,
   HttpResponse,
 } from "~/models/http-response";
+import { AccountController } from "~/models/user/web/account.controller";
 
 type ActionData = {
   firstName?: string;
@@ -45,8 +45,9 @@ export const action: ActionFunction = async ({ request }) => {
     };
 
     await container
-      .get<StudentController>(StudentController)
+      .get<AccountController>(AccountController)
       .createByEmail(dto);
+
     return redirect("/");
   } catch (err: any) {
     let error = err;

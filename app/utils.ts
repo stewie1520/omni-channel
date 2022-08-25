@@ -1,8 +1,10 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { Student } from "~/frontend-models/computed-student";
-import { ComputedStudent } from "~/frontend-models/computed-student";
+import type { Account } from "./frontend-models/account";
+import type { Student } from "./frontend-models/computed-student";
+import { ComputedStudent } from "./frontend-models/computed-student";
+import type { EmailAccount } from "./frontend-models/email-account";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -45,57 +47,74 @@ export function useMatchesData(
   return route?.data;
 }
 
+function isAccount(account: any): account is Account {
+  return (
+    account &&
+    typeof account === "object" &&
+    account.firstName &&
+    account.lastName
+  );
+}
+
 function isStudent(student: any): student is Student {
   return (
     student &&
     typeof student === "object" &&
     student.firstName &&
-    student.lastName
+    student.lastName &&
+    student.account
   );
 }
 
-function isComputedStudent(student: any): student is ComputedStudent {
-  return (
-    student &&
-    typeof student === "object" &&
-    typeof student.fullName === "string"
-  );
+export function isEmailAccount(account: any): account is EmailAccount {
+  return typeof account.email === "string" && isAccount(account);
 }
 
-export function useOptionalStudent(): Student | undefined {
+export function useOptionalEmailAccount(): EmailAccount | undefined {
   const data = useMatchesData("root");
-  if (!data || !isStudent(data.student)) {
+  if (!data || !isEmailAccount(data.account)) {
     return undefined;
   }
 
-  return data.student;
+  return data.account;
 }
 
-export function useOptionalComputedStudent(): ComputedStudent | undefined {
-  const data = useMatchesData("root");
-
-  if (!data || !isStudent(data.student)) {
-    return undefined;
-  }
-  return new ComputedStudent(data.student);
-}
-
-export function useStudent(): Student {
-  const maybeStudent = useOptionalStudent();
-  if (!maybeStudent) {
+export function useEmailAccount(): EmailAccount {
+  const maybeAccount = useOptionalEmailAccount();
+  if (!maybeAccount) {
     throw new Error(
-      "No student found in root loader, but student is required by useStudent. If student is optional, try useOptionalStudent instead."
+      "No email account found in root loader, but account is required by useEmailAccount. If student is optional, try useOptionalEmailAccount instead."
     );
   }
-  return maybeStudent;
+  return maybeAccount;
+}
+
+export function useOptionalAccount(): Account | undefined {
+  const data = useMatchesData("root");
+  if (!data || !isAccount(data.account)) {
+    return undefined;
+  }
+
+  return data.account;
+}
+
+export function useAccount(): Account {
+  const maybeAccount = useOptionalAccount();
+  if (!maybeAccount) {
+    throw new Error(
+      "No account found in root loader, but account is required by useAccount. If student is optional, try useOptionalAccount instead."
+    );
+  }
+  return maybeAccount;
 }
 
 export function useComputedStudent(): ComputedStudent {
-  const maybeComputedStudent = useOptionalComputedStudent();
-  if (!maybeComputedStudent) {
+  const data = useMatchesData("root");
+  if (!data || !isStudent(data.student)) {
     throw new Error(
-      "No computed student found in root loader, but computed student is required by useComputedStudent. If student is optional, try useOptionalComputedStudent instead."
+      "No student found in root loader, but student is required by useComputedStudent."
     );
   }
-  return maybeComputedStudent;
+
+  return new ComputedStudent(data.student);
 }

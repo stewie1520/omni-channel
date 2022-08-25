@@ -25,15 +25,21 @@ export class PostgresStudentRepository extends StudentRepository {
     return AccountProviderEnum.Mail;
   }
 
-  private toAccountEntity(dbAccount: Account): AccountEntity {
+  private toAccountEntity(
+    dbAccount: Account,
+    student?: StudentEntity
+  ): AccountEntity {
     return AccountEntity.create(
       {
         email: dbAccount.email,
+        firstName: dbAccount.firstName,
+        lastName: dbAccount.lastName,
         createdAt: dbAccount.createdAt,
         idOnProvider: dbAccount.idOnProvider,
         password: dbAccount.password,
         provider: this.toAccountProviderEnum(dbAccount.provider),
         updatedAt: dbAccount.updatedAt,
+        student,
       },
       dbAccount.id
     );
@@ -42,9 +48,10 @@ export class PostgresStudentRepository extends StudentRepository {
   private toStudentEntity(
     dbStudent: Student & { account: Account }
   ): StudentEntity {
-    return StudentEntity.create(
+    const account = this.toAccountEntity(dbStudent.account);
+    const student = StudentEntity.create(
       {
-        account: this.toAccountEntity(dbStudent.account),
+        account,
         avatarUrl: dbStudent.avatarUrl || undefined,
         firstName: dbStudent.firstName,
         createdAt: dbStudent.createdAt,
@@ -53,12 +60,28 @@ export class PostgresStudentRepository extends StudentRepository {
       },
       dbStudent.id
     );
+
+    account.student = student;
+
+    return student;
   }
 
   async findById(id: string): Promise<StudentEntity | null> {
     const dbStudent = await this.prismaClient.student.findUnique({
       where: { id },
       include: { account: true },
+    });
+
+    if (!dbStudent) return null;
+    return this.toStudentEntity(dbStudent);
+  }
+
+  async findByAccountId(accountId: string): Promise<StudentEntity | null> {
+    const dbStudent = await this.prismaClient.student.findUnique({
+      where: { accountId },
+      include: {
+        account: true,
+      },
     });
 
     if (!dbStudent) return null;

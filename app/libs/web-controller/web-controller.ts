@@ -1,6 +1,6 @@
+import { injectable } from "inversify";
 import type * as yup from "yup";
 import { HttpBadRequestResponse } from "~/models/http-response";
-import { injectable } from "inversify";
 
 @injectable()
 export abstract class WebController {

@@ -10,4 +10,6 @@ export abstract class StudentRepository {
   ): Promise<StudentEntity>;
 
   abstract findById(id: string): Promise<StudentEntity | null>;
+
+  abstract findByAccountId(accountId: string): Promise<StudentEntity | null>;
 }
