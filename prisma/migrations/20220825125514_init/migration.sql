@@ -8,9 +8,13 @@ CREATE TYPE "TeacherTitle" AS ENUM ('Mrs', 'Mr', 'Prof');
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "password" TEXT,
-    "provider" "AccountProvider",
+    "provider" "AccountProvider" NOT NULL,
     "idOnProvider" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
@@ -21,7 +25,7 @@ CREATE TABLE "Student" (
     "accountId" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "avartarUrl" TEXT,
+    "avatarUrl" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -34,7 +38,7 @@ CREATE TABLE "Teacher" (
     "accountId" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "avartarUrl" TEXT,
+    "avatarUrl" TEXT,
     "title" "TeacherTitle" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -54,6 +58,32 @@ CREATE TABLE "Verification" (
     CONSTRAINT "Verification_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Country" (
+    "id" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "flagCode" TEXT NOT NULL,
+    "timezone" TEXT NOT NULL,
+    "variant" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Country_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "University" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "countryId" TEXT NOT NULL,
+    "shortName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "University_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_email_key" ON "Account"("email");
 
@@ -66,6 +96,9 @@ CREATE UNIQUE INDEX "Teacher_accountId_key" ON "Teacher"("accountId");
 -- CreateIndex
 CREATE UNIQUE INDEX "Verification_accountId_key" ON "Verification"("accountId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Country_code_key" ON "Country"("code");
+
 -- AddForeignKey
 ALTER TABLE "Student" ADD CONSTRAINT "Student_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -74,3 +107,6 @@ ALTER TABLE "Teacher" ADD CONSTRAINT "Teacher_accountId_fkey" FOREIGN KEY ("acco
 
 -- AddForeignKey
 ALTER TABLE "Verification" ADD CONSTRAINT "Verification_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "University" ADD CONSTRAINT "University_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

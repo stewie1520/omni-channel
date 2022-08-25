@@ -8,17 +8,17 @@ generator client {
 }
 
 model Account {
-  id String @id @default(cuid())
-  email String @unique
-  firstName String
-  lastName String
-  password String?
-  provider AccountProvider
+  id           String          @id @default(cuid())
+  email        String          @unique
+  firstName    String
+  lastName     String
+  password     String?
+  provider     AccountProvider
   idOnProvider String?
 
   student Student?
 
-  teacher Teacher?
+  teacher      Teacher?
   verification Verification?
 
   createdAt DateTime @default(now())
@@ -32,11 +32,11 @@ enum AccountProvider {
 }
 
 model Student {
-  id    String @id @default(cuid())
-  account Account @relation(fields: [accountId], references: [id])
-  accountId String @unique
+  id        String  @id @default(cuid())
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId String  @unique
   firstName String
-  lastName String
+  lastName  String
   avatarUrl String?
 
   createdAt DateTime @default(now())
@@ -44,13 +44,13 @@ model Student {
 }
 
 model Teacher {
-  id String @id @default(cuid())
-  account Account @relation(fields: [accountId], references: [id])
-  accountId String @unique
+  id        String       @id @default(cuid())
+  account   Account      @relation(fields: [accountId], references: [id])
+  accountId String       @unique
   firstName String
-  lastName String
+  lastName  String
   avatarUrl String?
-  title TeacherTitle
+  title     TeacherTitle
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,11 +63,33 @@ enum TeacherTitle {
 }
 
 model Verification {
-  id String @id @default(cuid())
-  account Account @relation(fields: [accountId], references: [id])
-  accountId String @unique
-  token String
-  verified Boolean @default(false)
+  id        String   @id @default(cuid())
+  account   Account  @relation(fields: [accountId], references: [id])
+  accountId String   @unique
+  token     String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Country {
+  id         String       @id @default(cuid())
+  code       String       @unique
+  name       String
+  flagCode    String
+  timezone   String
+  variant    String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  University University[]
+}
+
+model University {
+  id        String   @id @default(cuid())
+  name      String
+  contry    Country  @relation(fields: [countryId], references: [id])
+  countryId String
+  shortName String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

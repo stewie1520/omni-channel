@@ -1,0 +1,14 @@
+[
+  {
+    "code": "VN",
+    "name": "Vietnam",
+    "flagCode": "🇻🇳",
+    "timezone": "+07:00"
+  },
+  {
+    "code": "US",
+    "name": "United States",
+    "flagCode": "🇺🇸",
+    "timezone": "-05:00"
+  }
+]
