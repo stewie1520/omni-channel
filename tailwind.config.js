@@ -6,6 +6,9 @@ module.exports = {
     "./app/**/*.{ts,tsx,jsx,js}",
     "node_modules/preline/dist/*.js"
   ],
+  extend: {
+    display: ["group-hover"],
+  },
   theme: {
     extend: {},
   },

@@ -1,8 +1,8 @@
 import { IconMacbook } from "../../../components/icons/macbook";
 import { IconUniversity } from "../../../components/icons/university";
 import { TitleSection } from "~/components/typos/section-title";
-import { UpcomingClass } from "~/page-components/dashboard/upcoming-class";
-import { MyClassTab } from "~/page-components/dashboard/my-class-tab";
+import { UpcomingClass } from "~/page-components/student/dashboard/upcoming-class";
+import { MyClassTab } from "~/page-components/student/dashboard/my-class-tab";
 import { useComputedStudent } from "~/utils";
 
 export default function DashboardPage() {

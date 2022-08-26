@@ -3,12 +3,20 @@ import { createContext } from "react";
 
 export type SetupState = {
   step: number;
+  email: string;
   who: "student" | "teacher" | null;
+  firstName: string;
+  avatarUrl: string | null;
+  lastName: string;
 };
 
 export const defaultSetupState: SetupState = {
   step: 0,
   who: null,
+  email: "",
+  avatarUrl: null,
+  firstName: "",
+  lastName: "",
 };
 
 export type SetUpContextType = {
@@ -27,7 +35,7 @@ export enum ActionType {
   PROFILE_CHANGED = "PROFILE_CHANGED",
 }
 
-type SetupAction = {
+export type SetupAction = {
   type: ActionType;
   payload: Partial<SetupState>;
 };

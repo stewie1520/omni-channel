@@ -1,5 +1,3 @@
-import { Form } from "@remix-run/react";
-import { Button } from "~/components/buttons/button";
 import { useAccount } from "~/utils";
 import { ActionType } from "./context/set-up.context";
 import { useSetupContext } from "./hooks/use-setup.hook";
@@ -10,11 +8,14 @@ export const ChooseRole = (props: any) => {
 
   return (
     <>
-      <span className="text-xl font-light text-slate-600">
-        Hi{" "}
-        <span className="font-semibold text-blue-500">{account.firstName}</span>
-        , to continue, please tell us who you are
-      </span>
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-2xl font-bold capitalize text-sky-900">
+          Choose your role
+        </span>
+        <span className="text-md font-light text-sky-900">
+          Hi {account.firstName}, to continue, please tell us who you are 🤟
+        </span>
+      </div>
       <div className="flex flex-row justify-center space-x-4">
         <div
           onClick={() =>
@@ -46,9 +47,6 @@ export const ChooseRole = (props: any) => {
           </span>
         </div>
       </div>
-      <Form action="/logout" method="post">
-        <Button variant="tertiary">Log out 👋</Button>
-      </Form>
     </>
   );
 };
