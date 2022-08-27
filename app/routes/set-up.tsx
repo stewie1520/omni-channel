@@ -86,13 +86,13 @@ export default function SetUp() {
     <SetupContext.Provider value={{ dispatch, state }}>
       <div
         className={classNames(
-          "relative flex h-full w-full flex-col items-center justify-center space-y-8 bg-slate-100",
+          "relative flex h-full w-full flex-col items-center justify-center bg-slate-100",
           {
             "overflow-y-hidden": state.step == 1,
           }
         )}
       >
-        <div className="header absolute top-0 right-0 flex w-full p-4">
+        <div className="header absolute top-0 right-0 z-20 flex w-full p-4">
           <div
             className="hs-dropdown relative ml-auto inline-flex"
             data-hs-dropdown-placement="bottom-right"
@@ -112,7 +112,7 @@ export default function SetUp() {
               className="hs-dropdown-menu duration hidden min-w-[15rem] divide-y divide-gray-200 rounded-lg bg-white p-2 opacity-0 shadow-md transition-[opacity,margin] hs-dropdown-open:opacity-100 dark:divide-gray-700 dark:border dark:border-gray-700 dark:bg-gray-800"
               aria-labelledby="hs-dropdown-with-header"
             >
-              <div className="mt-2 py-2 first:pt-0 last:pb-0 ">
+              <div className="mt-2 py-2 first:pt-0 last:pb-0">
                 <Link
                   className="flex items-center gap-x-3.5 rounded-md py-2 px-3 text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                   to={"/"}
@@ -138,7 +138,7 @@ export default function SetUp() {
         <div className="top-50% absolute left-8">
           <AccountSetUpTimeline currentStep={state.step} steps={setupSteps} />
         </div>
-        <div className="z-10 flex h-full w-full justify-center">
+        <div className="flex h-full w-full justify-center">
           {state.step === 0 && (
             <div className="container h-full w-full">
               <StepMotion>
@@ -148,8 +148,8 @@ export default function SetUp() {
           )}
           {state.step === 1 && (
             <>
-              <div className="fixed top-0 left-0 h-full w-full">
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity"></div>
+              <div className="fixed top-0 left-0 z-30 h-full w-full">
+                <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
                 <StepMotion>
                   <SetUpProfile />
                 </StepMotion>

@@ -11,8 +11,8 @@ export type SetupState = {
 };
 
 export const defaultSetupState: SetupState = {
-  step: 0,
-  who: null,
+  step: 1,
+  who: "student",
   email: "",
   avatarUrl: null,
   firstName: "",

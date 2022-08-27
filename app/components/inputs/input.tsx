@@ -23,7 +23,7 @@ export const Input = React.forwardRef(
         {props.label && (
           <label
             htmlFor={props.name}
-            className="mb-2 block text-sm font-medium dark:text-white"
+            className="mb-2 block text-left text-sm font-medium dark:text-white"
           >
             {props.label}
           </label>

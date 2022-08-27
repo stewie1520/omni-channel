@@ -34,6 +34,7 @@
   ],
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@headlessui/react": "^1.6.6",
     "@hookform/resolvers": "^2.9.7",
     "@prisma/client": "^4.0.0",
     "@remix-run/express": "^1.6.7",
