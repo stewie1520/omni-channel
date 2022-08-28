@@ -206,7 +206,7 @@ export const DatePicker = (props: any) => {
             >
               <div className="flex flex-row items-center justify-between px-6 pb-2">
                 <span
-                  className="cursor-pointer text-2xl font-semibold text-slate-800 hover:text-slate-500"
+                  className="cursor-pointer select-none text-2xl font-semibold text-slate-800 hover:text-slate-500"
                   onClick={handleChangeViewMode}
                 >
                   {viewMode === "year"
@@ -240,7 +240,7 @@ export const DatePicker = (props: any) => {
                     translateX: "0%",
                   }}
                 >
-                  <div className="mt-4 grid grid-cols-7 gap-4 px-6 text-center text-sm font-medium text-slate-800">
+                  <div className="mt-4 grid select-none grid-cols-7 gap-4 px-6 text-center text-sm font-medium text-slate-800">
                     <span>M</span>
                     <span>T</span>
                     <span>w</span>
