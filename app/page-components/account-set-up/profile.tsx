@@ -1,44 +1,11 @@
+import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
-import { Popover, Transition } from "@headlessui/react";
+import { DatePicker } from "~/components/inputs/date-picker";
 import { backToStepRole } from "./context/action-creator";
 import { useSetupContext } from "./hooks/use-setup.hook";
-import IconCamera from "@ant-design/icons/CameraFilled";
-import IconCalendar from "@ant-design/icons/CalendarOutlined";
-import IconLeft from "@ant-design/icons/LeftOutlined";
-import IconRight from "@ant-design/icons/RightOutlined";
-import { Input } from "~/components/inputs/input";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<any>(null);
-  const ref2 = useRef<any>(null);
-
-  useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
-    function handleClickOutside(event: any) {
-      console.log({ ...ref2.current });
-      if (
-        ref.current &&
-        !ref.current.contains(event.target) &&
-        isOpen &&
-        ref2.current &&
-        !ref2.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref, isOpen, ref2]);
 
   return (
     <>
@@ -78,96 +45,7 @@ export const SetUpProfile = (props: any) => {
               </div>
 
               <div className="mt-5 flex">
-                <div className="relative">
-                  <Input
-                    label="Your birthday"
-                    leadingIcon={IconCalendar}
-                    ref={ref2}
-                    onFocus={() => setIsOpen(true)}
-                  />
-                  {isOpen && (
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        animate={{
-                          opacity: 1,
-                          rotateX: 0,
-                          transition: {
-                            duration: 0.5,
-                          },
-                          display: "block",
-                        }}
-                      >
-                        <div
-                          ref={ref}
-                          className="absolute mt-2 flex w-96 origin-top-right flex-col rounded-md bg-white px-2 py-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                        >
-                          <div className="flex flex-row items-center justify-between px-6 pb-2">
-                            <span className="text-2xl font-semibold text-slate-800">
-                              July 2022
-                            </span>
-                            <div className="flex flex-row space-x-8">
-                              <IconLeft className="text-slate-700" />
-                              <IconRight className="text-slate-700" />
-                            </div>
-                          </div>
-                          <table className="w-full table-fixed border-separate border-spacing-5">
-                            <thead>
-                              <tr className="w-full text-sm font-medium text-slate-700">
-                                <th>M</th>
-                                <th>T</th>
-                                <th>W</th>
-                                <th>T</th>
-                                <th>F</th>
-                                <th>S</th>
-                                <th>S</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr className="text-center text-xs font-medium text-slate-700">
-                                <td>1</td>
-                                <td>2</td>
-                                <td>3</td>
-                                <td>4</td>
-                                <td>5</td>
-                                <td>6</td>
-                                <td>7</td>
-                              </tr>
-                              <tr className="w-full text-center text-xs font-medium text-slate-700">
-                                <td>8</td>
-                                <td>9</td>
-                                <td>10</td>
-                                <td>11</td>
-                                <td>12</td>
-                                <td>13</td>
-                                <td>14</td>
-                              </tr>
-                              <tr className="w-full text-center text-xs font-medium text-slate-700">
-                                <td>8</td>
-                                <td>9</td>
-                                <td>10</td>
-                                <td>11</td>
-                                <td>12</td>
-                                <td>13</td>
-                                <td>14</td>
-                              </tr>
-                              <tr className="w-full text-center text-xs font-medium text-slate-700">
-                                <td>8</td>
-                                <td>9</td>
-                                <td>10</td>
-                                <td>11</td>
-                                <td>12</td>
-                                <td>13</td>
-                                <td>14</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
-                  )}
-                </div>
+                <DatePicker label="Your birthday 🥳" />
               </div>
             </div>
           </div>
