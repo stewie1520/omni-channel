@@ -36,11 +36,17 @@ const isNow = (
   return isSameYear(i, today);
 };
 
-export const DatePicker = (props: any) => {
+export interface DatePickerProps {
+  value?: Date;
+  label: string;
+  onChange?: (value: Date) => void
+}
+
+export const DatePicker = (props: DatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<any>(null);
   const ref2 = useRef<any>(null);
-  const [current, setCurrent] = useState<Date>(props.date || new Date());
+  const [current, setCurrent] = useState<Date>(props.value || new Date());
   const today = useMemo(() => new Date(), []);
   const [viewMode, setViewMode] = useState<"month" | "year" | "day">("day");
 
@@ -102,6 +108,7 @@ export const DatePicker = (props: any) => {
     if (i === null) return;
     if (viewMode === "day" && typeof i === "object") {
       setCurrent(i);
+      props.onChange?.(i);
       setIsOpen(false);
     }
 
@@ -155,9 +162,6 @@ export const DatePicker = (props: any) => {
   }, [viewMode, current]);
 
   useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
     function handleClickOutside(event: any) {
       if (
         ref.current &&
@@ -169,10 +173,9 @@ export const DatePicker = (props: any) => {
         setIsOpen(false);
       }
     }
-    // Bind the event listener
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Unbind the event listener on clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [ref, isOpen, ref2]);
@@ -241,13 +244,13 @@ export const DatePicker = (props: any) => {
                   }}
                 >
                   <div className="mt-4 grid select-none grid-cols-7 gap-4 px-6 text-center text-sm font-medium text-slate-800">
-                    <span>M</span>
-                    <span>T</span>
-                    <span>w</span>
-                    <span>T</span>
-                    <span>F</span>
-                    <span>S</span>
-                    <span>S</span>
+                    <span>Mo</span>
+                    <span>Tu</span>
+                    <span>We</span>
+                    <span>Th</span>
+                    <span>Fr</span>
+                    <span>Sa</span>
+                    <span>Su</span>
 
                     {display.map((i, index) => {
                       const display = toDisplay(i);
