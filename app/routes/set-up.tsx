@@ -1,17 +1,18 @@
+import IconLogout from "@ant-design/icons/LogoutOutlined";
+import IconProfile from "@ant-design/icons/UserOutlined";
 import { Form, Link } from "@remix-run/react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
+import classNames from "classnames";
 import _capitalize from "lodash/capitalize";
 import { useReducer } from "react";
 import { AvatarHeader } from "~/page-components/account-set-up/avatar-header";
 import { ChooseRole } from "~/page-components/account-set-up/choose-role";
-import IconLogout from "@ant-design/icons/LogoutOutlined";
-import IconProfile from "@ant-design/icons/UserOutlined";
 import {
   ActionType,
   defaultSetupState,
   SetupContext,
-  setupReducer,
+  setupReducer
 } from "~/page-components/account-set-up/context/set-up.context";
 import { SetUpProfile } from "~/page-components/account-set-up/profile";
 import { StepMotion } from "~/page-components/account-set-up/step-motion";
@@ -19,7 +20,6 @@ import type { AccountSetUpTimelineProps } from "~/page-components/account-set-up
 import { AccountSetUpTimeline } from "~/page-components/account-set-up/timeline";
 import { getAccountId } from "~/session.server";
 import { useAccount, useEmailAccount } from "~/utils";
-import classNames from "classnames";
 
 export const meta: MetaFunction = ({ parentsData }) => {
   return {
@@ -56,7 +56,7 @@ export default function SetUp() {
 
   const setupSteps: AccountSetUpTimelineProps["steps"] = [
     {
-      icon: "🧑‍🎓",
+      icon: "👨‍🎓",
       text: "Join as",
       subText: state.who ? _capitalize(state.who) : "Choose your role",
       onClick: () => {
@@ -72,7 +72,7 @@ export default function SetUp() {
       subText: "Fill in your details",
     },
     {
-      icon: "🪪",
+      icon: "💳",
       text: "Verify your profile",
       subText: "Verify your details",
     },

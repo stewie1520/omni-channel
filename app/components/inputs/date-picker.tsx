@@ -5,42 +5,29 @@ import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { Input } from "~/components/inputs/input";
+import {
+  formatter,
+  isIn,
+  isNow,
+  isSameDate,
+  isSameMonth,
+  isSameYear,
+} from "~/libs/date";
 import { getMonthText } from "~/libs/date/getMonthText";
 
-const formatter = (date: Date, style: "medium" | "short" | "long" = "medium") =>
-  Intl.DateTimeFormat("en-US", { dateStyle: style }).format(date);
+export interface DatePickerProps {
+  value?: Date;
+  label: string;
+  onChange?: (value: Date) => void;
+  min?: Date;
+  max?: Date;
+}
 
-const isSameYear = (i: null | Date, current: Date) => {
-  return i !== null && current.getFullYear() === i.getFullYear();
-};
-
-const isSameMonth = (i: null | Date, current: Date) =>
-  i !== null && current.getMonth() === i.getMonth() && isSameYear(i, current);
-
-const isSameDate = (i: null | Date, current: Date) =>
-  i !== null && current.getDate() === i.getDate() && isSameMonth(i, current);
-
-const isNow = (
-  i: null | Date,
-  viewMode: "year" | "month" | "day",
-  today: Date
-) => {
-  if (viewMode === "day") {
-    return isSameDate(i, today);
-  }
-
-  if (viewMode === "month") {
-    return isSameMonth(i, today);
-  }
-
-  return isSameYear(i, today);
-};
-
-export const DatePicker = (props: any) => {
+export const DatePicker = (props: DatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<any>(null);
   const ref2 = useRef<any>(null);
-  const [current, setCurrent] = useState<Date>(props.date || new Date());
+  const [current, setCurrent] = useState<Date>(props.value || new Date());
   const today = useMemo(() => new Date(), []);
   const [viewMode, setViewMode] = useState<"month" | "year" | "day">("day");
 
@@ -102,6 +89,7 @@ export const DatePicker = (props: any) => {
     if (i === null) return;
     if (viewMode === "day" && typeof i === "object") {
       setCurrent(i);
+      props.onChange?.(i);
       setIsOpen(false);
     }
 
@@ -155,9 +143,6 @@ export const DatePicker = (props: any) => {
   }, [viewMode, current]);
 
   useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
     function handleClickOutside(event: any) {
       if (
         ref.current &&
@@ -169,10 +154,9 @@ export const DatePicker = (props: any) => {
         setIsOpen(false);
       }
     }
-    // Bind the event listener
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Unbind the event listener on clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [ref, isOpen, ref2]);
@@ -185,6 +169,7 @@ export const DatePicker = (props: any) => {
         ref={ref2}
         onFocus={() => setIsOpen(true)}
         value={formatter(current)}
+        readOnly
       />
       {isOpen && (
         <AnimatePresence>
@@ -241,31 +226,42 @@ export const DatePicker = (props: any) => {
                   }}
                 >
                   <div className="mt-4 grid select-none grid-cols-7 gap-4 px-6 text-center text-sm font-medium text-slate-800">
-                    <span>M</span>
-                    <span>T</span>
-                    <span>w</span>
-                    <span>T</span>
-                    <span>F</span>
-                    <span>S</span>
-                    <span>S</span>
+                    <span>Mo</span>
+                    <span>Tu</span>
+                    <span>We</span>
+                    <span>Th</span>
+                    <span>Fr</span>
+                    <span>Sa</span>
+                    <span>Su</span>
 
                     {display.map((i, index) => {
                       const display = toDisplay(i);
                       if (!display) return <div></div>;
+
+                      const isDisabled = !isIn({
+                        i,
+                        min: props.min,
+                        max: props.max,
+                        unit: "day",
+                      });
+
                       return (
                         <span
                           className={classNames(
                             "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
                             {
                               "cursor-pointer text-slate-800 hover:bg-gray-100":
-                                !isSameDate(i, current),
+                                !isSameDate(i, current) && !isDisabled,
                               "bg-blue-500 text-white": isSameDate(i, current),
                               "bg-gray-200 text-blue-500":
                                 !isSameDate(i, current) &&
                                 isNow(i, viewMode, today),
+                              " text-gray-400": isDisabled,
                             }
                           )}
-                          onClick={() => handleDateChange(i)}
+                          onClick={() =>
+                            isDisabled ? null : handleDateChange(i)
+                          }
                           key={index}
                         >
                           {toDisplay(i)}
@@ -290,20 +286,30 @@ export const DatePicker = (props: any) => {
                 >
                   <div className="mt-4 grid grid-cols-4 gap-4 px-6 text-center text-sm font-medium text-slate-800">
                     {display.map((i, index) => {
+                      const isDisabled = !isIn({
+                        i,
+                        min: props.min,
+                        max: props.max,
+                        unit: "month",
+                      });
+
                       return (
                         <span
                           className={classNames(
                             "flex h-8 items-center justify-center rounded-lg text-xs font-medium",
                             {
                               "cursor-pointer text-slate-800 hover:bg-gray-100":
-                                !isSameMonth(i, current),
+                                !isSameMonth(i, current) && !isDisabled,
                               "bg-blue-500 text-white": isSameMonth(i, current),
                               "bg-blue-200 text-blue-500":
                                 !isSameMonth(i, current) &&
                                 isNow(i, viewMode, today),
+                              "text-gray-400": isDisabled,
                             }
                           )}
-                          onClick={() => handleDateChange(i)}
+                          onClick={() =>
+                            isDisabled ? null : handleDateChange(i)
+                          }
                           key={index}
                         >
                           {toDisplay(i)}
@@ -328,20 +334,30 @@ export const DatePicker = (props: any) => {
                 >
                   <div className="mt-4 grid grid-cols-5 gap-4 px-6 text-center text-sm font-medium text-slate-800">
                     {display.map((i, index) => {
+                      const isDisabled = !isIn({
+                        i,
+                        min: props.min,
+                        max: props.max,
+                        unit: "month",
+                      });
+
                       return (
                         <span
                           className={classNames(
                             "flex h-8 items-center justify-center rounded-lg text-xs font-medium",
                             {
                               "cursor-pointer text-slate-800 hover:bg-gray-100":
-                                !isSameYear(i, current),
+                                !isSameYear(i, current) && !isDisabled,
                               "bg-blue-500 text-white": isSameYear(i, current),
                               "bg-blue-200 text-blue-500":
                                 !isSameYear(i, current) &&
                                 isNow(i, viewMode, today),
+                              "bg-gray-200 text-gray-400": isDisabled,
                             }
                           )}
-                          onClick={() => handleDateChange(i)}
+                          onClick={() =>
+                            isDisabled ? null : handleDateChange(i)
+                          }
                           key={index}
                         >
                           {toDisplay(i)}

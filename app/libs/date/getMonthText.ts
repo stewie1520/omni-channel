@@ -15,6 +15,23 @@ const MONTHS: Record<string, string[]> = {
   ],
 };
 
+const MONTHS_SHORT: Record<string, string[]> = {
+  en: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+};
+
 export const getMonthText = (month: number, locale?: string) => {
-  return MONTHS[locale || "en"][month];
+  return MONTHS_SHORT[locale || "en"][month];
 };

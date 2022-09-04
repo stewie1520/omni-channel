@@ -1,11 +1,12 @@
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
 import { DatePicker } from "~/components/inputs/date-picker";
-import { backToStepRole } from "./context/action-creator";
+import { backToStepRole, changeBirthDay } from "./context/action-creator";
 import { useSetupContext } from "./hooks/use-setup.hook";
 
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
+  const today = new Date();
 
   return (
     <>
@@ -40,38 +41,23 @@ export const SetUpProfile = (props: any) => {
                     <p className="text-sm font-medium text-gray-400">
                       {state.email}
                     </p>
+                    <p>{state.birthDay.toString()}</p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 flex">
-                <DatePicker label="Your birthday 🥳" />
+                <DatePicker
+                  value={state.birthDay}
+                  label="Your birthday 🥳"
+                  onChange={(date) => changeBirthDay(dispatch, date)}
+                  max={today}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-      {/* <figure className="relative z-[1] ml-auto mr-20 h-full w-full max-w-full rounded-b-lg shadow-[0_2.75rem_3.5rem_-2rem_rgb(45_55_75_/_20%),_0_0_5rem_-2rem_rgb(45_55_75_/_15%)] dark:shadow-[0_2.75rem_3.5rem_-2rem_rgb(0_0_0_/_20%),_0_0_5rem_-2rem_rgb(0_0_0_/_15%)]">
-          <div className="relative flex max-w-full items-center rounded-t-lg bg-[#f6f4f7] py-5 px-24 dark:bg-gray-700">
-            <div className="group absolute top-2/4 left-4 flex -translate-y-1 space-x-1">
-              <span
-                onClick={() => backToStepRole(dispatch)}
-                className="flex h-3 w-3 items-center justify-center rounded-full bg-red-400 dark:bg-gray-600"
-              >
-                <IconClose className="hidden text-[8px] font-bold text-gray-700 group-hover:block" />
-              </span>
-              <span className="h-3 w-3 rounded-full bg-gray-400 dark:bg-gray-600"></span>
-              <span className="flex h-3 w-3 items-center justify-center rounded-full bg-green-400 dark:bg-gray-600">
-                <IconExpand className="hidden text-[8px] font-bold text-gray-700 group-hover:block" />
-              </span>
-            </div>
-            <div className="flex h-full w-full items-center justify-center">
-              Your Profile
-            </div>
-          </div>
-
-          <div className="h-full rounded-b-lg bg-white"></div>
-        </figure> */}
     </>
   );
 };

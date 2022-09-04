@@ -1,3 +1,4 @@
+import type React from "react";
 import type { SetupAction } from "./set-up.context";
 import { ActionType } from "./set-up.context";
 
@@ -10,3 +11,12 @@ export const backToStepRole = (dispatch: React.Dispatch<SetupAction>) => {
     },
   });
 };
+
+export const changeBirthDay = (dispatch: React.Dispatch<SetupAction>, birthDay: Date) => {
+  dispatch({
+    type: ActionType.PROFILE_CHANGED,
+    payload: {
+      birthDay
+    }
+  })
+}

@@ -10,6 +10,7 @@ export interface InputProps
   leadingIcon?: React.ComponentType<any>;
   loading?: boolean;
   placeholder?: string;
+  readonly?: boolean;
 }
 
 // eslint-disable-next-line react/display-name
