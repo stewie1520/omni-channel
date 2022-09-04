@@ -33,7 +33,7 @@ export const SetUpProfile = (props: any) => {
           className="absolute right-3 -top-7 cursor-pointer font-bold text-white"
         />
 
-        <div className="relative flex h-full flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl border bg-white pt-5  shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:shadow-slate-700/[.7]">
+        <div className="relative flex h-full flex-col items-center gap-3 overflow-auto rounded-tl-xl rounded-tr-xl border bg-white pb-5 pt-5  shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:shadow-slate-700/[.7]">
           <div className="flex w-[60%] items-center">
             <div className="flex w-[50%] flex-col pt-5">
               <div className="group block flex-shrink-0 flex-row">
