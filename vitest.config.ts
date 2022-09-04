@@ -17,5 +17,8 @@ export default defineConfig({
       ".*\\/build\\/.*",
       ".*\\/postgres-data\\/.*",
     ],
+    coverage: {
+      provider: "istanbul",
+    },
   },
 });
