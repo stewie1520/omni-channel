@@ -1,6 +1,6 @@
+import _omit from "lodash/omit";
 import type { ForwardedRef, HTMLProps } from "react";
 import React from "react";
-import _omit from "lodash/omit";
 
 export interface AuthCheckboxPops extends HTMLProps<HTMLInputElement> {
   onChange: (event: { target: any; type?: any }) => Promise<void | boolean>;

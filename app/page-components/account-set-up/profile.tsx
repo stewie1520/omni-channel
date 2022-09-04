@@ -1,8 +1,15 @@
+import { Select } from "../../components/inputs/select";
+import { backToStepRole, changeBirthDay } from "./context/action-creator";
+import { useSetupContext } from "./hooks/use-setup.hook";
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
 import { DatePicker } from "~/components/inputs/date-picker";
-import { backToStepRole, changeBirthDay } from "./context/action-creator";
-import { useSetupContext } from "./hooks/use-setup.hook";
+
+const genderOptions: Readonly<{ value: string; name: string }[]> = [
+  { name: "👨 Male", value: "male" },
+  { name: "👩 Female", value: "female" },
+  { name: "🏳️‍🌈 Other", value: "other" },
+];
 
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
@@ -41,18 +48,18 @@ export const SetUpProfile = (props: any) => {
                     <p className="text-sm font-medium text-gray-400">
                       {state.email}
                     </p>
-                    <p>{state.birthDay.toString()}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 flex">
+              <div className="mt-5 grid w-2/4 grid-cols-2 gap-2">
                 <DatePicker
                   value={state.birthDay}
-                  label="Your birthday 🥳"
+                  label="Birthday 🥳"
                   onChange={(date) => changeBirthDay(dispatch, date)}
                   max={today}
                 />
+                <Select label={"Gender"} options={genderOptions} />
               </div>
             </div>
           </div>

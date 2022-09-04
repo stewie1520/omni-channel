@@ -1,8 +1,8 @@
+import { AccountService } from "./core/application/service/account.service";
+import { createRedisSessionStorage } from "./libs/redis";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { container } from "~/models/container";
-import { AccountService } from "./core/application/service/account.service";
-import { createRedisSessionStorage } from "./libs/redis";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 invariant(process.env.REDIS_HOST, "REDIS_HOST must be set");

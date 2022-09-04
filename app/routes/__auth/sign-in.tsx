@@ -1,6 +1,7 @@
-import * as yup from "yup";
+import IconLoading from "@ant-design/icons/LoadingOutlined";
 import IconLock from "@ant-design/icons/LockOutlined";
 import IconMail from "@ant-design/icons/MailOutlined";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Form,
   Link,
@@ -8,24 +9,23 @@ import {
   useSubmit,
   useTransition,
 } from "@remix-run/react";
-import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
-import { Button } from "~/components/buttons/button";
-import { Input } from "~/components/inputs/input";
-import { LoginSideBar } from "~/page-components/auth/login-sidebar";
-import { AuthCheckbox } from "~/page-components/auth/checkbox";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
-import { createAccountSession } from "~/session.server";
+import * as yup from "yup";
 import { AlertError } from "~/components/alerts/error";
-import IconLoading from "@ant-design/icons/LoadingOutlined";
+import { Button } from "~/components/buttons/button";
+import { Input } from "~/components/inputs/input";
 import { container } from "~/models/container";
 import {
   HttpInternalServerErrorResponse,
   HttpResponse,
 } from "~/models/http-response";
 import { AccountController } from "~/models/user/web/account.controller";
+import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
+import { AuthCheckbox } from "~/page-components/auth/checkbox";
+import { LoginSideBar } from "~/page-components/auth/login-sidebar";
+import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
+import { createAccountSession } from "~/session.server";
 
 type ActionData = {
   email?: string;

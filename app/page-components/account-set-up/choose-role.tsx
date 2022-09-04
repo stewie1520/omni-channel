@@ -1,6 +1,6 @@
-import { useAccount } from "~/utils";
 import { ActionType } from "./context/set-up.context";
 import { useSetupContext } from "./hooks/use-setup.hook";
+import { useAccount } from "~/utils";
 
 export const ChooseRole = (props: any) => {
   const account = useAccount();

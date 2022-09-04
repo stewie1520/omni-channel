@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1662270732905" clover="3.2.0">
-  <project timestamp="1662270732905" name="All files">
+<coverage generated="1662274431224" clover="3.2.0">
+  <project timestamp="1662274431224" name="All files">
     <metrics statements="38" coveredstatements="17" conditionals="37" coveredconditionals="10" methods="7" coveredmethods="1" elements="82" coveredelements="28" complexity="0" loc="38" ncloc="38" packages="1" files="2" classes="2"/>
     <file name="getMonthText.ts" path="/Users/hieudong/playground/omni-channel/app/libs/date/getMonthText.ts">
       <metrics statements="4" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>

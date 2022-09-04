@@ -1,29 +1,29 @@
+import IconLoading from "@ant-design/icons/LoadingOutlined";
 import IconLock from "@ant-design/icons/LockOutlined";
 import IconMail from "@ant-design/icons/MailOutlined";
 import IconUser from "@ant-design/icons/UserOutlined";
-import IconLoading from "@ant-design/icons/LoadingOutlined";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { Button } from "~/components/buttons/button";
-import { Input } from "~/components/inputs/input";
-import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
-import { AuthCheckbox } from "~/page-components/auth/checkbox";
-import { SignUpSideBar } from "~/page-components/auth/sign-up-sidebar";
-import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
-import { isEmail } from "~/libs/strings/isEmail";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useEffect, useState } from "react";
 import _debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { Button } from "~/components/buttons/button";
+import { Input } from "~/components/inputs/input";
+import { isEmail } from "~/libs/strings/isEmail";
 import { container } from "~/models/container";
 import {
   HttpInternalServerErrorResponse,
   HttpResponse,
 } from "~/models/http-response";
 import { AccountController } from "~/models/user/web/account.controller";
+import { ButtonAuthGoogle } from "~/page-components/auth/auth-google";
+import { AuthCheckbox } from "~/page-components/auth/checkbox";
+import { SignUpSideBar } from "~/page-components/auth/sign-up-sidebar";
+import { ThirdPartyProviders } from "~/page-components/auth/third-party-providers";
 
 type ActionData = {
   firstName?: string;

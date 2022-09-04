@@ -1,5 +1,4 @@
 import { Form, Link } from "@remix-run/react";
-
 import { useOptionalAccount } from "~/utils";
 
 export default function Index() {

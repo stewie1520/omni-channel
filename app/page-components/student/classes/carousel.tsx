@@ -1,7 +1,7 @@
+import { TopicCard } from "./topic";
 import { useEffect, useRef, useState } from "react";
 import { IconArrowLeft } from "~/components/icons/arrow-left";
 import { IconArrowRight } from "~/components/icons/arrow-right";
-import { TopicCard } from "./topic";
 
 export const CarouselTopics = (props: any) => {
   const maxScrollWidth = useRef(0);

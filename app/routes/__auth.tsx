@@ -2,7 +2,6 @@ import { Outlet } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-
 import { getAccountId } from "~/session.server";
 
 type AuthLayoutData = {

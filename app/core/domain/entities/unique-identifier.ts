@@ -1,5 +1,5 @@
-import { nanoid } from "nanoid";
 import { Identifier } from "./identifier";
+import { nanoid } from "nanoid";
 
 export class UniqueIdentifier extends Identifier<string | number> {
   constructor(id?: string | number) {

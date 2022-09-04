@@ -7,7 +7,7 @@ async function seed() {
   console.log("👩‍🌾 Seeding...");
   await prisma.country.createMany({
     data: countries,
-  })
+  });
 
   console.log(`Database has been seeded. 🌱`);
 }

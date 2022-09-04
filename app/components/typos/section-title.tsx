@@ -1,5 +1,5 @@
-import React from "react";
 import classNames from "classnames/bind";
+import React from "react";
 
 export interface TitleSectionProps {
   icon?: React.ComponentType<any>;

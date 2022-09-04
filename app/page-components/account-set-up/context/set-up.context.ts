@@ -1,5 +1,5 @@
+import _pick from "lodash/pick";
 import type React from "react";
-import _pick from 'lodash/pick';
 import { createContext } from "react";
 
 export type SetupState = {
@@ -63,7 +63,7 @@ export const setupReducer: SetupReducer = (state, action) => {
       return {
         ...state,
         ..._pick(action.payload, profileFields),
-      }
+      };
     default:
       return state;
   }

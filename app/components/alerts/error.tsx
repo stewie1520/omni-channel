@@ -1,6 +1,6 @@
+import type { AlertProps } from "./props";
 import classNames from "classnames";
 import { useState } from "react";
-import type { AlertProps } from "./props";
 
 export const AlertError = ({
   short = "Sorry but we have some troubles",

@@ -1,7 +1,7 @@
+import IconLoading from "@ant-design/icons/LoadingOutlined";
 import classNames from "classnames";
 import type { ForwardedRef } from "react";
 import React from "react";
-import IconLoading from "@ant-design/icons/LoadingOutlined";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -24,7 +24,7 @@ export const Input = React.forwardRef(
         {props.label && (
           <label
             htmlFor={props.name}
-            className="mb-2 block text-left text-sm font-medium dark:text-white"
+            className="mb-2 block text-left text-sm font-medium text-gray-600 dark:text-white"
           >
             {props.label}
           </label>

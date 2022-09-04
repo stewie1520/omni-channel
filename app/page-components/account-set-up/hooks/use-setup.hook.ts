@@ -1,4 +1,4 @@
-import { useContext } from "react";
 import { SetupContext } from "../context/set-up.context";
+import { useContext } from "react";
 
 export const useSetupContext = () => useContext(SetupContext);

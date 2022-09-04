@@ -14,8 +14,8 @@ import {
 } from "@remix-run/react";
 import "reflect-metadata";
 
-import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getAccount } from "./session.server";
+import tailwindStylesheetUrl from "./styles/tailwind.css";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];

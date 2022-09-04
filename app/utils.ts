@@ -1,10 +1,9 @@
-import { useMatches } from "@remix-run/react";
-import { useMemo } from "react";
-
 import type { Account } from "./frontend-models/account";
 import type { Student } from "./frontend-models/computed-student";
 import { ComputedStudent } from "./frontend-models/computed-student";
 import type { EmailAccount } from "./frontend-models/email-account";
+import { useMatches } from "@remix-run/react";
+import { useMemo } from "react";
 
 const DEFAULT_REDIRECT = "/";
 

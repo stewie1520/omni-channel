@@ -1,7 +1,7 @@
-import IconProfile from "@ant-design/icons/ProfileOutlined";
-import IconLogout from "@ant-design/icons/LogoutOutlined";
-import { Form, Link } from "@remix-run/react";
 import { AvatarHeader } from "./avatar-header";
+import IconLogout from "@ant-design/icons/LogoutOutlined";
+import IconProfile from "@ant-design/icons/ProfileOutlined";
+import { Form, Link } from "@remix-run/react";
 
 const userItems: { to: string; icon: any; text: string }[] = [
   {

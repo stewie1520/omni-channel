@@ -1,7 +1,7 @@
-import IconDashboard from "@ant-design/icons/DashboardOutlined";
-import IconCompass from "@ant-design/icons/CompassFilled";
-import { Link } from "@remix-run/react";
 import { ItemSideBar } from "./buttons/item-sidebar";
+import IconCompass from "@ant-design/icons/CompassFilled";
+import IconDashboard from "@ant-design/icons/DashboardOutlined";
+import { Link } from "@remix-run/react";
 
 const items: { to: string; text: string; icon: any }[] = [
   {
@@ -100,11 +100,7 @@ export const Sidebar = () => {
           <ul className="space-y-2">
             {items.map((item, index) => (
               <li key={index}>
-                <ItemSideBar
-                  to={item.to}
-                  text={item.text}
-                  icon={item.icon}
-                />
+                <ItemSideBar to={item.to} text={item.text} icon={item.icon} />
               </li>
             ))}
           </ul>

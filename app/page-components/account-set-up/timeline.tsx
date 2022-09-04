@@ -1,6 +1,6 @@
+import IconCheck from "@ant-design/icons/CheckOutlined";
 import classNames from "classnames";
 import { ReactElement, useMemo } from "react";
-import IconCheck from "@ant-design/icons/CheckOutlined";
 
 export interface AccountSetUpStepProps {
   done?: boolean;

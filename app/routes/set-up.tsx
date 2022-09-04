@@ -12,7 +12,7 @@ import {
   ActionType,
   defaultSetupState,
   SetupContext,
-  setupReducer
+  setupReducer,
 } from "~/page-components/account-set-up/context/set-up.context";
 import { SetUpProfile } from "~/page-components/account-set-up/profile";
 import { StepMotion } from "~/page-components/account-set-up/step-motion";
