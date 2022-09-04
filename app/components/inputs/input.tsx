@@ -34,7 +34,7 @@ export const Input = React.forwardRef(
             ref={ref}
             type={props.type || "text"}
             className={classNames(
-              "block w-full rounded-md border-gray-200 py-3 px-4 text-sm shadow-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400",
+              "block w-full rounded-md border-gray-200 py-3 px-4 text-sm shadow-sm  focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400",
               {
                 "pl-11": !!LeadingIcon,
               },

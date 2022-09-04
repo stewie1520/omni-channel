@@ -187,7 +187,7 @@ export const DatePicker = (props: DatePickerProps) => {
           >
             <div
               ref={ref}
-              className="absolute mt-2 flex w-96 origin-top-right flex-col rounded-md bg-white px-2 py-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute z-50 mt-2 flex w-96 origin-top-right flex-col rounded-md bg-white px-2 py-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="flex flex-row items-center justify-between px-6 pb-2">
                 <span

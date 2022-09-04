@@ -4,6 +4,8 @@ import { useSetupContext } from "./hooks/use-setup.hook";
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
 import { DatePicker } from "~/components/inputs/date-picker";
+import { useMemo } from "react";
+import { string } from "yup";
 
 const genderOptions: Readonly<{ value: string; name: string }[]> = [
   { name: "👨 Male", value: "male" },
@@ -14,6 +16,12 @@ const genderOptions: Readonly<{ value: string; name: string }[]> = [
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
   const today = new Date();
+  const countryOptions = useMemo<{ value: string; name: string }[]>(() => {
+    return state.countries.map((country) => ({
+      name: `${country.flagCode} ${country.name} (${country.timezone})`,
+      value: country.code,
+    }));
+  }, [state.countries]);
 
   return (
     <>
@@ -27,7 +35,7 @@ export const SetUpProfile = (props: any) => {
 
         <div className="relative flex h-full flex-col items-center gap-3 rounded-tl-xl rounded-tr-xl border bg-white pt-5  shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:shadow-slate-700/[.7]">
           <div className="flex w-[60%] items-center">
-            <div className="flex w-full flex-col pt-5">
+            <div className="flex w-[50%] flex-col pt-5">
               <div className="group block flex-shrink-0 flex-row">
                 <div className="flex items-end">
                   <div className="relative">
@@ -52,7 +60,7 @@ export const SetUpProfile = (props: any) => {
                 </div>
               </div>
 
-              <div className="mt-5 grid w-2/4 grid-cols-2 gap-2">
+              <div className="mt-5 grid grid-cols-2 gap-2">
                 <DatePicker
                   value={state.birthDay}
                   label="Birthday 🥳"
@@ -60,6 +68,28 @@ export const SetUpProfile = (props: any) => {
                   max={today}
                 />
                 <Select label={"Gender"} options={genderOptions} />
+              </div>
+              <div className="mt-5">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="with-corner-hint"
+                    className="mb-2 block text-sm font-medium text-gray-600 dark:text-white"
+                  >
+                    Bio 👋
+                  </label>
+                  <span className="mb-2 block text-xs text-gray-500">
+                    Optional
+                  </span>
+                </div>
+                <textarea
+                  className="block w-full rounded-md border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                  rows={3}
+                  placeholder="I love sharing 🔥..."
+                ></textarea>
+              </div>
+
+              <div className="mt-5 w-full">
+                <Select label={"Country/Region 🌎"} options={countryOptions} />
               </div>
             </div>
           </div>

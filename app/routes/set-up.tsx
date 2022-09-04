@@ -1,11 +1,14 @@
 import IconLogout from "@ant-design/icons/LogoutOutlined";
 import IconProfile from "@ant-design/icons/UserOutlined";
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import classNames from "classnames";
 import _capitalize from "lodash/capitalize";
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
+import { CountryResponse } from "~/core/application/dtos/country.dto";
+import { CountryService } from "~/core/application/service/country.service";
+import { container } from "~/models/container";
 import { AvatarHeader } from "~/page-components/account-set-up/avatar-header";
 import { ChooseRole } from "~/page-components/account-set-up/choose-role";
 import {
@@ -13,13 +16,19 @@ import {
   defaultSetupState,
   SetupContext,
   setupReducer,
+  SetupState,
 } from "~/page-components/account-set-up/context/set-up.context";
 import { SetUpProfile } from "~/page-components/account-set-up/profile";
 import { StepMotion } from "~/page-components/account-set-up/step-motion";
 import type { AccountSetUpTimelineProps } from "~/page-components/account-set-up/timeline";
 import { AccountSetUpTimeline } from "~/page-components/account-set-up/timeline";
+import type { Country } from "~/page-components/account-set-up/types";
 import { getAccountId } from "~/session.server";
 import { useAccount, useEmailAccount } from "~/utils";
+
+export type LoaderData = {
+  countries: Country[];
+};
 
 export const meta: MetaFunction = ({ parentsData }) => {
   return {
@@ -34,8 +43,13 @@ export const loader: LoaderFunction = async ({ request }) => {
       return redirect("/");
     }
 
+    const countries = await container
+      .get<CountryService>(CountryService)
+      .getAll();
+
     return json({
       accountId,
+      countries,
     });
   } catch (err) {
     console.log(err);
@@ -46,15 +60,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function SetUp() {
   const account = useAccount();
   const emailAccount = useEmailAccount();
+  const { countries } = useLoaderData<LoaderData>();
 
   const [state, dispatch] = useReducer(setupReducer, {
     ...defaultSetupState,
     email: emailAccount.email,
     firstName: account.firstName,
     lastName: account.lastName,
+    countries: countries as unknown as CountryResponse[],
   });
 
-  const setupSteps: AccountSetUpTimelineProps["steps"] = [
+  const setupSteps = useRef<AccountSetUpTimelineProps["steps"]>([
     {
       icon: "👨‍🎓",
       text: "Join as",
@@ -80,7 +96,7 @@ export default function SetUp() {
       icon: "🎉",
       text: "Get started",
     },
-  ];
+  ]);
 
   return (
     <SetupContext.Provider value={{ dispatch, state }}>
@@ -136,7 +152,10 @@ export default function SetUp() {
           </div>
         </div>
         <div className="top-50% absolute left-8">
-          <AccountSetUpTimeline currentStep={state.step} steps={setupSteps} />
+          <AccountSetUpTimeline
+            currentStep={state.step}
+            steps={setupSteps.current}
+          />
         </div>
         <div className="flex h-full w-full justify-center">
           {state.step === 0 && (

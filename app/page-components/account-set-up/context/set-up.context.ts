@@ -1,6 +1,7 @@
 import _pick from "lodash/pick";
 import type React from "react";
 import { createContext } from "react";
+import type { Country } from "../types";
 
 export type SetupState = {
   step: number;
@@ -10,6 +11,7 @@ export type SetupState = {
   avatarUrl: string | null;
   lastName: string;
   birthDay: Date;
+  countries: Country[];
 };
 
 export const defaultSetupState: SetupState = {
@@ -20,6 +22,7 @@ export const defaultSetupState: SetupState = {
   firstName: "",
   lastName: "",
   birthDay: new Date(),
+  countries: [],
 };
 
 export type SetUpContextType = {
