@@ -6,6 +6,7 @@ import { useSetupContext } from "./hooks/use-setup.hook";
 
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
+  const today = new Date();
 
   return (
     <>
@@ -40,21 +41,23 @@ export const SetUpProfile = (props: any) => {
                     <p className="text-sm font-medium text-gray-400">
                       {state.email}
                     </p>
-                    <p>
-                      {state.birthDay.toString()}
-                    </p>
+                    <p>{state.birthDay.toString()}</p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 flex">
-                <DatePicker value={state.birthDay} label="Your birthday 🥳" onChange={(date) => changeBirthDay(dispatch, date)} />
+                <DatePicker
+                  value={state.birthDay}
+                  label="Your birthday 🥳"
+                  onChange={(date) => changeBirthDay(dispatch, date)}
+                  max={today}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-      
     </>
   );
 };
