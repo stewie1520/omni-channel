@@ -1,4 +1,5 @@
 import type React from "react";
+import _pick from 'lodash/pick';
 import { createContext } from "react";
 
 export type SetupState = {
@@ -8,6 +9,7 @@ export type SetupState = {
   firstName: string;
   avatarUrl: string | null;
   lastName: string;
+  birthDay: Date;
 };
 
 export const defaultSetupState: SetupState = {
@@ -17,6 +19,7 @@ export const defaultSetupState: SetupState = {
   avatarUrl: null,
   firstName: "",
   lastName: "",
+  birthDay: new Date(),
 };
 
 export type SetUpContextType = {
@@ -55,6 +58,12 @@ export const setupReducer: SetupReducer = (state, action) => {
         ...state,
         ...action.payload,
       } as SetupState;
+    case ActionType.PROFILE_CHANGED:
+      const profileFields: Array<keyof SetupState> = ["birthDay"];
+      return {
+        ...state,
+        ..._pick(action.payload, profileFields),
+      }
     default:
       return state;
   }

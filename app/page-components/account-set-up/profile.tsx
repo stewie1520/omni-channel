@@ -1,7 +1,7 @@
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
 import { DatePicker } from "~/components/inputs/date-picker";
-import { backToStepRole } from "./context/action-creator";
+import { backToStepRole, changeBirthDay } from "./context/action-creator";
 import { useSetupContext } from "./hooks/use-setup.hook";
 
 export const SetUpProfile = (props: any) => {
@@ -40,12 +40,15 @@ export const SetUpProfile = (props: any) => {
                     <p className="text-sm font-medium text-gray-400">
                       {state.email}
                     </p>
+                    <p>
+                      {state.birthDay.toString()}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 flex">
-                <DatePicker label="Your birthday 🥳" />
+                <DatePicker value={state.birthDay} label="Your birthday 🥳" onChange={(date) => changeBirthDay(dispatch, date)} />
               </div>
             </div>
           </div>
