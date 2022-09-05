@@ -4,7 +4,7 @@ import { useAccount } from "~/utils";
 
 export const ChooseRole = (props: any) => {
   const account = useAccount();
-  const { dispatch, state } = useSetupContext();
+  const { dispatch } = useSetupContext();
 
   return (
     <>

@@ -3,12 +3,14 @@
     "code": "VN",
     "name": "Vietnam",
     "flagCode": "🇻🇳",
-    "timezone": "+07:00"
+    "timezone": "+07:00",
+    "phoneCode": "+84"
   },
   {
     "code": "US",
     "name": "United States",
     "flagCode": "🇺🇸",
-    "timezone": "-05:00"
+    "timezone": "-05:00",
+    "phoneCode": "+1"
   }
 ]

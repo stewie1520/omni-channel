@@ -7,11 +7,16 @@ export interface CountryProps {
   flagCode: string;
   timezone: string;
   variant?: string;
+  phoneCode?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export class CountryEntity extends BaseEntity<CountryProps> {
+  get phoneCode(): string | undefined {
+    return this.props.phoneCode;
+  }
+
   get code(): string {
     return this.props.code;
   }

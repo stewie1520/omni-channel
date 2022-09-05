@@ -1,4 +1,4 @@
-import type { SetupAction } from "./set-up.context";
+import type { SetupAction, SetupState } from "./set-up.context";
 import { ActionType } from "./set-up.context";
 import type React from "react";
 
@@ -12,14 +12,17 @@ export const backToStepRole = (dispatch: React.Dispatch<SetupAction>) => {
   });
 };
 
-export const changeBirthDay = (
+type K = keyof Pick<
+  SetupState,
+  "birthDay" | "selectedCountry" | "gender" | "phone" | "bio"
+>;
+
+export function changeProfile(
   dispatch: React.Dispatch<SetupAction>,
-  birthDay: Date
-) => {
+  payload: { [Property in K]?: SetupState[Property] }
+) {
   dispatch({
     type: ActionType.PROFILE_CHANGED,
-    payload: {
-      birthDay,
-    },
+    payload,
   });
-};
+}

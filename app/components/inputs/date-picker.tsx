@@ -1,4 +1,4 @@
-import IconCalendar from "@ant-design/icons/CalendarOutlined";
+import { CalendarIcon as IconCalendar } from "@heroicons/react/outline";
 import IconLeft from "@ant-design/icons/LeftOutlined";
 import IconRight from "@ant-design/icons/RightOutlined";
 import classNames from "classnames";
@@ -165,7 +165,9 @@ export const DatePicker = (props: DatePickerProps) => {
     <div className="relative">
       <Input
         label={props.label}
-        leadingIcon={IconCalendar}
+        leadingIcon={() => (
+          <IconCalendar width={16} className="dark:text-gray-400" />
+        )}
         ref={ref2}
         onFocus={() => setIsOpen(true)}
         value={formatter(current)}

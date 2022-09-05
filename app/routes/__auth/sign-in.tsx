@@ -1,6 +1,8 @@
 import IconLoading from "@ant-design/icons/LoadingOutlined";
-import IconLock from "@ant-design/icons/LockOutlined";
-import IconMail from "@ant-design/icons/MailOutlined";
+import {
+  MailIcon as IconMail,
+  LockClosedIcon as IconLock,
+} from "@heroicons/react/outline";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Form,
@@ -125,14 +127,14 @@ export default function LoginPage() {
                   className="mt-5 grid gap-y-4"
                 >
                   <Input
-                    leadingIcon={IconMail}
+                    leadingIcon={() => <IconMail width={16} />}
                     label="Your Email"
                     placeholder="jane.doe@example.com"
                     {...register("email")}
                     error={errors.email?.message}
                   />
                   <Input
-                    leadingIcon={IconLock}
+                    leadingIcon={() => <IconLock width={16} />}
                     label="Your Password"
                     type="password"
                     placeholder="Password"

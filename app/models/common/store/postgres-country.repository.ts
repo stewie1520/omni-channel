@@ -17,6 +17,7 @@ export class PostgresCountryRepository extends CountryRepository {
         timezone: country.timezone,
         updatedAt: country.updatedAt,
         variant: country.variant ?? undefined,
+        phoneCode: country.phoneCode ?? undefined,
       })
     );
   }

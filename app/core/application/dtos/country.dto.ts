@@ -4,6 +4,7 @@ export interface CountryResponse {
   flagCode: string;
   timezone: string;
   variant?: string;
+  phoneCode?: string;
   createdAt: Date;
   updatedAt: Date;
 }

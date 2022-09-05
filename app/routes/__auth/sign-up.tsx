@@ -1,7 +1,9 @@
 import IconLoading from "@ant-design/icons/LoadingOutlined";
-import IconLock from "@ant-design/icons/LockOutlined";
-import IconMail from "@ant-design/icons/MailOutlined";
-import IconUser from "@ant-design/icons/UserOutlined";
+import {
+  MailIcon as IconMail,
+  LockClosedIcon as IconLock,
+  UserIcon as IconUser,
+} from "@heroicons/react/outline";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
@@ -181,7 +183,7 @@ export default function SignUpPage() {
                   <div className="grid grid-cols-2 gap-x-2">
                     <Input
                       label="First Name"
-                      leadingIcon={IconUser}
+                      leadingIcon={() => <IconUser width={16} />}
                       type="text"
                       error={
                         serverError?.firstName || errors?.firstName?.message
@@ -192,7 +194,7 @@ export default function SignUpPage() {
                     <Input
                       label="Last Name"
                       error={serverError?.lastName || errors?.lastName?.message}
-                      leadingIcon={IconUser}
+                      leadingIcon={() => <IconUser width={16} />}
                       type="text"
                       placeholder="Doe"
                       {...register("lastName")}
@@ -201,7 +203,7 @@ export default function SignUpPage() {
 
                   <Input
                     loading={isValidating}
-                    leadingIcon={IconMail}
+                    leadingIcon={() => <IconMail width={16} />}
                     label="Your Email"
                     type="email"
                     error={
@@ -214,7 +216,7 @@ export default function SignUpPage() {
                     onBlur={handleInputEmailBlurred}
                   />
                   <Input
-                    leadingIcon={IconLock}
+                    leadingIcon={() => <IconLock width={16} />}
                     label="Your Password"
                     type="password"
                     error={serverError?.password || errors?.password?.message}

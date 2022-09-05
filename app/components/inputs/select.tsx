@@ -1,16 +1,24 @@
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import type { ArrayElement } from "../../libs/types";
 
-export interface SelectProps {
+export interface SelectProps<TOption extends { name: any; value: unknown }> {
   label?: string;
   name?: string;
-  options: Readonly<{ name: any; value: unknown }[]>;
+  options: Readonly<TOption[]>;
+  value?: TOption["value"];
+  onChange?: (value: TOption["value"]) => void;
 }
 
-export function Select(props: SelectProps) {
-  const [selected, setSelected] = useState(props.options[0]);
+export function Select<TOption extends Readonly<{ name: any; value: unknown }>>(
+  props: SelectProps<TOption>
+) {
+  const [selected, setSelected] = useState(
+    props.value
+      ? props.options.find(({ value }) => value === props.value)
+      : props.options[0]
+  );
+
   const optionValues = props.options.map((option) => option.value);
 
   const value2Options = useMemo(() => {
@@ -20,14 +28,15 @@ export function Select(props: SelectProps) {
   }, [props.options]);
 
   const handleSelectChanged = useCallback<
-    (selectedValue: ArrayElement<SelectProps["options"]>["value"]) => void
+    (selectedValue: TOption["value"]) => void
   >(
     (selectedValue) => {
       const found = value2Options.get(selectedValue);
       if (!found) throw new Error("No option matched");
       setSelected(found);
+      props.onChange?.(found.value);
     },
-    [value2Options]
+    [value2Options, props]
   );
 
   return (
@@ -40,10 +49,10 @@ export function Select(props: SelectProps) {
           {props.label}
         </label>
       )}
-      <Listbox value={selected.value} onChange={handleSelectChanged}>
+      <Listbox value={selected?.value} onChange={handleSelectChanged}>
         <div className="relative w-full">
           <Listbox.Button className="relative w-full cursor-default rounded-md border-gray-200 bg-white py-3 px-4 pr-10  text-left text-sm shadow-sm ring-1 ring-black ring-opacity-5 focus:z-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-            <span className="block truncate">{selected.name}</span>
+            <span className="block truncate">{selected?.name}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <SelectorIcon
                 className="h-5 w-5 text-gray-400"
@@ -60,7 +69,7 @@ export function Select(props: SelectProps) {
             enterFrom="transform opacity-0 scale-95"
             enterTo="transform opacity-100 scale-100"
           >
-            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {optionValues.map((value, valueIdx) => (
                 <Listbox.Option
                   key={valueIdx}

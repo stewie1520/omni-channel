@@ -15,6 +15,7 @@ export class CountryService {
       code: countryEntity.code,
       name: countryEntity.name,
       flagCode: countryEntity.flagCode,
+      phoneCode: countryEntity.phoneCode,
       variant: countryEntity.variant,
       timezone: countryEntity.timezone,
       createdAt: countryEntity.createdAt,

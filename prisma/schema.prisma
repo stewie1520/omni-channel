@@ -81,6 +81,7 @@ model Country {
   variant    String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
+  phoneCode  String?
   University University[]
 }
 

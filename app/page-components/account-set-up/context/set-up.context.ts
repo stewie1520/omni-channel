@@ -1,28 +1,36 @@
-import _pick from "lodash/pick";
 import type React from "react";
 import { createContext } from "react";
+import { reducer } from "~/libs/reducer";
 import type { Country } from "../types";
 
 export type SetupState = {
   step: number;
   email: string;
+  bio: string | null;
   who: "student" | "teacher" | null;
+  gender: "female" | "male" | "other";
   firstName: string;
+  phone: string;
   avatarUrl: string | null;
   lastName: string;
   birthDay: Date;
   countries: Country[];
+  selectedCountry: string;
 };
 
 export const defaultSetupState: SetupState = {
   step: 1,
   who: "student",
   email: "",
+  bio: null,
+  gender: "female",
   avatarUrl: null,
   firstName: "",
   lastName: "",
+  phone: "",
   birthDay: new Date(),
   countries: [],
+  selectedCountry: "",
 };
 
 export type SetUpContextType = {
@@ -37,7 +45,7 @@ export const SetupContext = createContext<SetUpContextType>({
 
 export enum ActionType {
   CHANGE_STEP = "CHANGE_STEP",
-  CHOSE_WHO = "CHOOSED_WHO",
+  CHOSE_WHO = "CHOSE_WHO",
   PROFILE_CHANGED = "PROFILE_CHANGED",
 }
 
@@ -46,28 +54,38 @@ export type SetupAction = {
   payload: Partial<SetupState>;
 };
 
-type SetupReducer = (state: SetupState, action: SetupAction) => SetupState;
+export const setupReducer = reducer<SetupState>({
+  [ActionType.CHANGE_STEP]: (state, payload) => {
+    state.step = payload.step!;
+    state.who = payload.who!;
+  },
+  [ActionType.CHOSE_WHO]: (state, payload) => {
+    state.step = 1;
+    state.who = payload.who!;
+  },
+  [ActionType.PROFILE_CHANGED]: (state, payload) => {
+    if (payload.birthDay) {
+      state.birthDay = payload.birthDay;
+    }
 
-export const setupReducer: SetupReducer = (state, action) => {
-  switch (action.type) {
-    case ActionType.CHOSE_WHO:
-      return {
-        ...state,
-        step: 1,
-        who: action.payload.who,
-      } as SetupState;
-    case ActionType.CHANGE_STEP:
-      return {
-        ...state,
-        ...action.payload,
-      } as SetupState;
-    case ActionType.PROFILE_CHANGED:
-      const profileFields: Array<keyof SetupState> = ["birthDay"];
-      return {
-        ...state,
-        ..._pick(action.payload, profileFields),
-      };
-    default:
-      return state;
-  }
-};
+    if (payload.selectedCountry) {
+      state.selectedCountry = payload.selectedCountry;
+    }
+
+    if (payload.bio) {
+      state.bio = payload.bio;
+    }
+
+    if (payload.gender) {
+      state.gender = payload.gender;
+    }
+
+    if (payload.phone) {
+      state.phone = payload.phone;
+    }
+
+    if (payload.bio) {
+      state.bio = payload.bio;
+    }
+  },
+});

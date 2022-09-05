@@ -1,17 +1,30 @@
 import { Select } from "../../components/inputs/select";
-import { backToStepRole, changeBirthDay } from "./context/action-creator";
+import { backToStepRole, changeProfile } from "./context/action-creator";
 import { useSetupContext } from "./hooks/use-setup.hook";
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
 import { DatePicker } from "~/components/inputs/date-picker";
-import { useMemo } from "react";
-import { string } from "yup";
+import { useCallback, useMemo } from "react";
+import { Button } from "~/components/buttons/button";
+import { InputSelect } from "~/components/inputs/input-select";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import * as yup from "yup";
+import type { SetupState } from "./context/set-up.context";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-const genderOptions: Readonly<{ value: string; name: string }[]> = [
-  { name: "👨 Male", value: "male" },
-  { name: "👩 Female", value: "female" },
-  { name: "🏳️‍🌈 Other", value: "other" },
-];
+const genderOptions: Readonly<{ value: SetupState["gender"]; name: string }[]> =
+  [
+    { name: "👨 Male", value: "male" },
+    { name: "👩 Female", value: "female" },
+    { name: "🏳️‍🌈 Other", value: "other" },
+  ];
+
+const validationSchema = yup.object().shape({
+  birthDay: yup.date().required().max(new Date()),
+  gender: yup.string().oneOf(["male", "female", "other"]),
+  selectedCountry: yup.string().required(),
+  phone: yup.string().required(),
+});
 
 export const SetUpProfile = (props: any) => {
   const { dispatch, state } = useSetupContext();
@@ -23,19 +36,92 @@ export const SetUpProfile = (props: any) => {
     }));
   }, [state.countries]);
 
+  const countryCodeOptions = useMemo<{ value: string; name: string }[]>(() => {
+    return state.countries.map((country) => ({
+      name: `${country.flagCode} (${country.phoneCode})`,
+      value: country.code,
+      short: country.flagCode,
+    }));
+  }, [state.countries]);
+
+  const { control, register, setValue, handleSubmit } = useForm({
+    resolver: yupResolver(validationSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      birthDay: state.birthDay,
+      gender: state.gender,
+      selectedCountry: state.selectedCountry,
+      phone: state.phone,
+      bio: state.bio,
+    },
+  });
+
+  const onCloseStep = useCallback(() => {
+    backToStepRole(dispatch);
+  }, [dispatch]);
+
+  const onChangeCountry = useCallback(
+    (country: string) => {
+      setValue("selectedCountry", country);
+      changeProfile(dispatch, { selectedCountry: country });
+    },
+    [dispatch, setValue]
+  );
+
+  const onChangeGender = useCallback(
+    (gender: SetupState["gender"]) => {
+      setValue("gender", gender);
+      changeProfile(dispatch, { gender });
+    },
+    [dispatch, setValue]
+  );
+
+  const onChangeBirthday = useCallback(
+    (birthDay: Date) => {
+      setValue("birthDay", birthDay);
+      changeProfile(dispatch, { birthDay });
+    },
+    [dispatch, setValue]
+  );
+
+  const onChangePhone = useCallback(
+    (phone: string) => {
+      setValue("phone", phone);
+      changeProfile(dispatch, { phone });
+    },
+    [dispatch, setValue]
+  );
+
+  const onChangeBio = useCallback(
+    (e: any) => {
+      const bio = e.target.value as unknown as string;
+      setValue("bio", bio);
+      changeProfile(dispatch, { bio });
+    },
+    [dispatch, setValue]
+  );
+
+  const onSubmit: SubmitHandler<{
+    birthDay: Date;
+    gender: "other" | "female" | "male";
+    selectedCountry: string;
+    phone: string;
+    bio: string | null;
+  }> = (data) => {
+    console.log("data", data);
+  };
+
   return (
     <>
       <div className="fixed left-0 bottom-0 h-[95%] w-full">
         <IconClose
-          onClick={() => {
-            backToStepRole(dispatch);
-          }}
+          onClick={onCloseStep}
           className="absolute right-3 -top-7 cursor-pointer font-bold text-white"
         />
 
         <div className="relative flex h-full flex-col items-center gap-3 overflow-auto rounded-tl-xl rounded-tr-xl border bg-white pb-5 pt-5  shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:shadow-slate-700/[.7]">
           <div className="flex w-[60%] items-center">
-            <div className="flex w-[50%] flex-col pt-5">
+            <div className="flex w-full flex-col pt-5 lg:w-[50%]">
               <div className="group block flex-shrink-0 flex-row">
                 <div className="flex items-end">
                   <div className="relative">
@@ -59,38 +145,92 @@ export const SetUpProfile = (props: any) => {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                <DatePicker
-                  value={state.birthDay}
-                  label="Birthday 🥳"
-                  onChange={(date) => changeBirthDay(dispatch, date)}
-                  max={today}
-                />
-                <Select label={"Gender"} options={genderOptions} />
-              </div>
-              <div className="mt-5">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="with-corner-hint"
-                    className="mb-2 block text-sm font-medium text-gray-600 dark:text-white"
-                  >
-                    Bio 👋
-                  </label>
-                  <span className="mb-2 block text-xs text-gray-500">
-                    Optional
-                  </span>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="mt-5 grid grid-cols-2 gap-2">
+                  <Controller
+                    name="birthDay"
+                    control={control}
+                    render={({ field }) => (
+                      <DatePicker
+                        {...field}
+                        label="Birthday 🥳"
+                        onChange={onChangeBirthday}
+                        max={today}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="gender"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label={"Gender"}
+                        onChange={onChangeGender}
+                        options={genderOptions}
+                      />
+                    )}
+                  />
                 </div>
-                <textarea
-                  className="block w-full rounded-md border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                  rows={3}
-                  placeholder="I love sharing 🔥..."
-                ></textarea>
-              </div>
 
-              <div className="mt-5 w-full">
-                <Select label={"Country/Region 🌎"} options={countryOptions} />
-              </div>
+                <div className="mt-5 flex w-full gap-2">
+                  <Controller
+                    name="selectedCountry"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label={"Country - Region 🌎"}
+                        options={countryOptions}
+                        onChange={onChangeCountry}
+                      />
+                    )}
+                  />
+
+                  <InputSelect
+                    {...register("phone")}
+                    label={"Phone 📱"}
+                    options={countryCodeOptions}
+                    onChange={onChangePhone}
+                  />
+                </div>
+
+                <div className="mt-5">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="with-corner-hint"
+                      className="mb-2 block text-sm font-medium text-gray-600 dark:text-white"
+                    >
+                      Bio 👋
+                    </label>
+                    <span className="mb-2 block text-xs text-gray-500">
+                      Optional
+                    </span>
+                  </div>
+                  <Controller
+                    name="bio"
+                    control={control}
+                    render={({ field: { value, ...field } }) => (
+                      <textarea
+                        {...field}
+                        onChange={onChangeBio}
+                        className="block w-full rounded-md border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                        rows={3}
+                        placeholder="I love sharing 🔥..."
+                      />
+                    )}
+                  />
+                </div>
+
+                <div className="mt-5 flex w-full">
+                  <Button type="submit" variant="gradient-primary">
+                    Next
+                  </Button>
+                  <Button variant="tertiary" onClick={onCloseStep}>
+                    Close
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
