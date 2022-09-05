@@ -15,13 +15,15 @@ export type SetupState = {
   lastName: string;
   birthDay: Date;
   countries: Country[];
+  otp: string;
   selectedCountry: string;
 };
 
 export const defaultSetupState: SetupState = {
-  step: 1,
+  step: 2,
   who: "student",
   email: "",
+  otp: "",
   bio: null,
   gender: "female",
   avatarUrl: null,
@@ -47,6 +49,7 @@ export enum ActionType {
   CHANGE_STEP = "CHANGE_STEP",
   CHOSE_WHO = "CHOSE_WHO",
   PROFILE_CHANGED = "PROFILE_CHANGED",
+  OTP_CHANGED = "OTP_CHANGED",
 }
 
 export type SetupAction = {
@@ -57,11 +60,16 @@ export type SetupAction = {
 export const setupReducer = reducer<SetupState>({
   [ActionType.CHANGE_STEP]: (state, payload) => {
     state.step = payload.step!;
-    state.who = payload.who!;
+    if (payload.who) {
+      state.who = payload.who;
+    }
   },
   [ActionType.CHOSE_WHO]: (state, payload) => {
     state.step = 1;
     state.who = payload.who!;
+  },
+  [ActionType.OTP_CHANGED]: (state, payload) => {
+    state.otp = payload.otp!;
   },
   [ActionType.PROFILE_CHANGED]: (state, payload) => {
     if (payload.birthDay) {

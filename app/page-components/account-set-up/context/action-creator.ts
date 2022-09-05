@@ -12,6 +12,24 @@ export const backToStepRole = (dispatch: React.Dispatch<SetupAction>) => {
   });
 };
 
+export const toStepProfile = (dispatch: React.Dispatch<SetupAction>) => {
+  dispatch({
+    type: ActionType.CHANGE_STEP,
+    payload: {
+      step: 1,
+    },
+  });
+};
+
+export const toStepVerification = (dispatch: React.Dispatch<SetupAction>) => {
+  dispatch({
+    type: ActionType.CHANGE_STEP,
+    payload: {
+      step: 2,
+    },
+  });
+};
+
 type K = keyof Pick<
   SetupState,
   "birthDay" | "selectedCountry" | "gender" | "phone" | "bio"

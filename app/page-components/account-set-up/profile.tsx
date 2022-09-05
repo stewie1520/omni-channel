@@ -1,5 +1,9 @@
 import { Select } from "../../components/inputs/select";
-import { backToStepRole, changeProfile } from "./context/action-creator";
+import {
+  backToStepRole,
+  changeProfile,
+  toStepVerification,
+} from "./context/action-creator";
 import { useSetupContext } from "./hooks/use-setup.hook";
 import IconCamera from "@ant-design/icons/CameraFilled";
 import IconClose from "@ant-design/icons/CloseOutlined";
@@ -108,7 +112,7 @@ export const SetUpProfile = (props: any) => {
     phone: string;
     bio: string | null;
   }> = (data) => {
-    console.log("data", data);
+    toStepVerification(dispatch);
   };
 
   return (

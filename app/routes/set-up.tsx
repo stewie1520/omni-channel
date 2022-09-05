@@ -16,6 +16,7 @@ import {
   setupReducer,
 } from "~/page-components/account-set-up/context/set-up.context";
 import { SetUpProfile } from "~/page-components/account-set-up/profile";
+import { SetUpVerification } from "~/page-components/account-set-up/verification";
 import { StepMotion } from "~/page-components/account-set-up/step-motion";
 import type { AccountSetUpTimelineProps } from "~/page-components/account-set-up/timeline";
 import { AccountSetUpTimeline } from "~/page-components/account-set-up/timeline";
@@ -131,6 +132,16 @@ export default function SetUp() {
                 <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
                 <StepMotion>
                   <SetUpProfile />
+                </StepMotion>
+              </div>
+            </>
+          )}
+          {state.step === 2 && (
+            <>
+              <div className="fixed top-0 left-0 z-30 h-full w-full">
+                <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
+                <StepMotion>
+                  <SetUpVerification />
                 </StepMotion>
               </div>
             </>
