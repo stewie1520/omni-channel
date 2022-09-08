@@ -23,7 +23,7 @@ export type SetupState = {
 };
 
 export const defaultSetupState: SetupState = {
-  step: 2,
+  step: 0,
   who: "student",
   email: "",
   otp: "",

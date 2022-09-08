@@ -162,7 +162,7 @@ export const DatePicker = (props: DatePickerProps) => {
   }, [ref, isOpen, ref2]);
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <Input
         label={props.label}
         leadingIcon={() => (

@@ -143,11 +143,11 @@ export const SetUpProfile = (props: any) => {
                 <div className="relative">
                   <img
                     draggable="false"
-                    className="inline-block h-[154px] w-[154px] flex-shrink-0 rounded-full ring-4 ring-gray-400 ring-offset-4"
+                    className="inline-block h-[154px] w-[154px] flex-shrink-0 rounded-full ring-4 ring-blue-400 ring-offset-4"
                     src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
                     alt="User Avatar"
                   />
-                  <button className="absolute -right-1 bottom-6 flex h-[32px] w-[32px] items-center justify-center rounded-full bg-gray-500 p-1 transition-all hover:bg-gray-600">
+                  <button className="absolute -right-1 bottom-6 flex h-[32px] w-[32px] items-center justify-center rounded-full bg-blue-500 p-1 transition-all hover:bg-blue-600">
                     <IconCamera className="text-white" />
                   </button>
                 </div>
