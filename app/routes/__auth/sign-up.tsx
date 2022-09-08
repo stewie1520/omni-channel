@@ -76,7 +76,7 @@ const validationSchema = yup.object().shape({
 const validateEmailAsync = async (email: string) => {
   try {
     if (!isEmail(email)) return;
-    const result = await fetch("/api/user/email-exists", {
+    const result = await fetch("/api/account/email-exists", {
       method: "post",
       body: JSON.stringify({ email }),
     });

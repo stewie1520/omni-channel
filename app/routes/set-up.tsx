@@ -1,9 +1,11 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useTransition } from "@remix-run/react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import classNames from "classnames";
 import _capitalize from "lodash/capitalize";
-import { useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useRef } from "react";
+import type { LoadingBarRef } from "react-top-loading-bar";
+import LoadingBar from "react-top-loading-bar";
 import type { CountryResponse } from "~/core/application/dtos/country.dto";
 import { CountryService } from "~/core/application/service/country.service";
 import { container } from "~/models/container";
@@ -16,11 +18,11 @@ import {
   setupReducer,
 } from "~/page-components/account-set-up/context/set-up.context";
 import { SetUpProfile } from "~/page-components/account-set-up/profile";
-import { SetUpVerification } from "~/page-components/account-set-up/verification";
 import { StepMotion } from "~/page-components/account-set-up/step-motion";
 import type { AccountSetUpTimelineProps } from "~/page-components/account-set-up/timeline";
 import { AccountSetUpTimeline } from "~/page-components/account-set-up/timeline";
 import type { Country } from "~/page-components/account-set-up/types";
+import { SetUpVerification } from "~/page-components/account-set-up/verification";
 import { getAccountId } from "~/session.server";
 import { useAccount, useEmailAccount } from "~/utils";
 
@@ -60,6 +62,8 @@ export default function SetUp() {
   const emailAccount = useEmailAccount();
   const loaderData = useLoaderData<LoaderData>();
   const countries = loaderData.countries as unknown as CountryResponse[];
+  const loadingBarRef = useRef(null);
+  const transition = useTransition();
 
   const [state, dispatch] = useReducer(setupReducer, {
     ...defaultSetupState,
@@ -70,6 +74,15 @@ export default function SetUp() {
     countries,
     selectedCountry: countries[0].code,
   });
+
+  useEffect(() => {
+    if (loadingBarRef.current === null) return;
+    if (transition.state !== "idle" || state.loading) {
+      (loadingBarRef.current as LoadingBarRef).continuousStart(0, 0.5);
+    } else {
+      (loadingBarRef.current as LoadingBarRef).complete();
+    }
+  }, [loadingBarRef, transition.state, state.loading]);
 
   const setupSteps = useMemo<AccountSetUpTimelineProps["steps"]>(
     () => [
@@ -104,6 +117,7 @@ export default function SetUp() {
 
   return (
     <SetupContext.Provider value={{ dispatch, state }}>
+      <LoadingBar color="#3498db" ref={loadingBarRef} />
       <div
         className={classNames(
           "relative flex h-full w-full flex-col items-center justify-center bg-slate-100",

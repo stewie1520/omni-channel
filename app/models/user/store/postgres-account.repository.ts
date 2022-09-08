@@ -6,9 +6,48 @@ import { AccountEntity } from "~/core/domain/entities/account.entity";
 import { StudentEntity } from "~/core/domain/entities/student.entity";
 import { AccountProviderEnum } from "~/core/domain/enums/account-provider.enum";
 import { PRISMA_CLIENT } from "~/db.server";
+import { getAccountOTPRepository } from "./redis-entities/account-otp";
 
 @injectable()
 export class PostgresAccountRepository extends AccountRepository {
+  async generateOTP(
+    account: AccountEntity,
+    otpHashed: string,
+    ttl?: number
+  ): Promise<{ otpId: string; expiredAt: Date }> {
+    ttl = ttl || 300;
+    const repository = await getAccountOTPRepository();
+    const existed = await repository
+      .search()
+      .where("accountId")
+      .equals(account.id.toString())
+      .returnFirst();
+
+    if (existed) {
+      return {
+        otpId: existed.entityId,
+        expiredAt: new Date(existed.toJSON().issueDate.getTime() + ttl * 1000),
+      };
+    }
+
+    const entity = await repository.createAndSave({
+      accountId: account.id.toString(),
+      otpHashed,
+      issueDate: new Date(),
+    });
+
+    if (ttl !== undefined) {
+      await repository.expire(entity.entityId, ttl);
+    }
+
+    const raw = entity.toJSON();
+
+    return {
+      otpId: entity.entityId,
+      expiredAt: new Date(raw.issueDate.getTime() + ttl * 1000),
+    };
+  }
+
   constructor(@inject(PRISMA_CLIENT) private prismaClient: PrismaClient) {
     super();
   }

@@ -21,11 +21,17 @@ export const toStepProfile = (dispatch: React.Dispatch<SetupAction>) => {
   });
 };
 
-export const toStepVerification = (dispatch: React.Dispatch<SetupAction>) => {
+export const toStepVerification = (
+  dispatch: React.Dispatch<SetupAction>,
+  otpId: string,
+  otpExpiredAt: Date
+) => {
   dispatch({
     type: ActionType.CHANGE_STEP,
     payload: {
       step: 2,
+      otpId,
+      otpExpiredAt,
     },
   });
 };
@@ -42,5 +48,17 @@ export function changeProfile(
   dispatch({
     type: ActionType.PROFILE_CHANGED,
     payload,
+  });
+}
+
+export function setLoading(
+  dispatch: React.Dispatch<SetupAction>,
+  loading: boolean
+) {
+  dispatch({
+    type: ActionType.SET_LOADING,
+    payload: {
+      loading,
+    },
   });
 }

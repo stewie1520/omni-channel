@@ -17,6 +17,9 @@ export type SetupState = {
   countries: Country[];
   otp: string;
   selectedCountry: string;
+  otpId: string;
+  otpExpiredAt: Date;
+  loading: boolean;
 };
 
 export const defaultSetupState: SetupState = {
@@ -31,7 +34,10 @@ export const defaultSetupState: SetupState = {
   lastName: "",
   phone: "",
   birthDay: new Date(),
+  loading: false,
   countries: [],
+  otpId: "",
+  otpExpiredAt: new Date(),
   selectedCountry: "",
 };
 
@@ -50,6 +56,7 @@ export enum ActionType {
   CHOSE_WHO = "CHOSE_WHO",
   PROFILE_CHANGED = "PROFILE_CHANGED",
   OTP_CHANGED = "OTP_CHANGED",
+  SET_LOADING = "SET_LOADING",
 }
 
 export type SetupAction = {
@@ -63,6 +70,17 @@ export const setupReducer = reducer<SetupState>({
     if (payload.who) {
       state.who = payload.who;
     }
+
+    if (payload.otpId) {
+      state.otpId = payload.otpId;
+    }
+
+    if (payload.otpExpiredAt) {
+      state.otpExpiredAt = payload.otpExpiredAt;
+    }
+  },
+  [ActionType.SET_LOADING]: (state, payload) => {
+    state.loading = payload.loading!;
   },
   [ActionType.CHOSE_WHO]: (state, payload) => {
     state.step = 1;

@@ -7,6 +7,11 @@ export abstract class AccountRepository {
   abstract getById(id: string): Promise<AccountEntity | null>;
   abstract getByEmail(email: string): Promise<AccountEntity | null>;
   abstract deleteByEmail(email: string): Promise<AccountEntity>;
+  abstract generateOTP(
+    account: AccountEntity,
+    otpHashed: string,
+    ttl?: number
+  ): Promise<{ otpId: string; expiredAt: Date }>;
   abstract createByEmail(data: {
     id?: string;
     email: string;

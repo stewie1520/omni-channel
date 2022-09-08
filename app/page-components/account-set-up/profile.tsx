@@ -1,26 +1,28 @@
+import IconCamera from "@ant-design/icons/CameraFilled";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useCallback, useMemo, useState } from "react";
+import IconLoading from "@ant-design/icons/LoadingOutlined";
+import type { SubmitHandler } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { Button } from "~/components/buttons/button";
+import { DatePicker } from "~/components/inputs/date-picker";
+import { InputSelect } from "~/components/inputs/input-select";
 import { Select } from "../../components/inputs/select";
 import {
   backToStepRole,
   changeProfile,
+  setLoading,
   toStepVerification,
 } from "./context/action-creator";
-import { useSetupContext } from "./hooks/use-setup.hook";
-import IconCamera from "@ant-design/icons/CameraFilled";
-import IconClose from "@ant-design/icons/CloseOutlined";
-import { DatePicker } from "~/components/inputs/date-picker";
-import { useCallback, useMemo } from "react";
-import { Button } from "~/components/buttons/button";
-import { InputSelect } from "~/components/inputs/input-select";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import * as yup from "yup";
 import type { SetupState } from "./context/set-up.context";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useSetupContext } from "./hooks/use-setup.hook";
 
 const genderOptions: Readonly<{ value: SetupState["gender"]; name: string }[]> =
   [
-    { name: "👨 Male", value: "male" },
-    { name: "👩 Female", value: "female" },
-    { name: "🏳️‍🌈 Other", value: "other" },
+    { name: "Male", value: "male" },
+    { name: "Female", value: "female" },
+    { name: "Other", value: "other" },
   ];
 
 const validationSchema = yup.object().shape({
@@ -111,131 +113,144 @@ export const SetUpProfile = (props: any) => {
     selectedCountry: string;
     phone: string;
     bio: string | null;
-  }> = (data) => {
-    toStepVerification(dispatch);
+  }> = async (data) => {
+    try {
+      setLoading(dispatch, true);
+      const result = await fetch("/api/account/send-mail-otp", {
+        method: "post",
+      });
+
+      const { otpId, expiredAt } = (await result.json()) as {
+        otpId: string;
+        expiredAt: Date;
+      };
+
+      toStepVerification(dispatch, otpId, new Date(expiredAt));
+    } catch (err) {
+      console.log("err", err);
+    } finally {
+      setLoading(dispatch, false);
+    }
   };
 
   return (
     <>
-      <div className="fixed left-0 bottom-0 h-[95%] w-full">
-        <IconClose
-          onClick={onCloseStep}
-          className="absolute right-3 -top-7 cursor-pointer font-bold text-white"
-        />
-
-        <div className="relative flex h-full flex-col items-center gap-3 overflow-auto rounded-tl-xl rounded-tr-xl border bg-white pb-5 pt-5  shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:shadow-slate-700/[.7]">
-          <div className="flex w-[60%] items-center">
-            <div className="flex w-full flex-col pt-5 lg:w-[50%]">
-              <div className="group block flex-shrink-0 flex-row">
-                <div className="flex items-end">
-                  <div className="relative">
-                    <img
-                      draggable="false"
-                      className="inline-block h-[154px] w-[154px] flex-shrink-0 rounded-full ring-4 ring-gray-400 ring-offset-4"
-                      src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
-                      alt="User Avatar"
-                    />
-                    <button className="absolute -right-1 bottom-6 flex h-[32px] w-[32px] items-center justify-center rounded-full bg-gray-500 p-1 transition-all hover:bg-gray-600">
-                      <IconCamera className="text-white" />
-                    </button>
-                  </div>
-                  <div className="ml-5 mb-5">
-                    <h3 className="text-3xl font-semibold text-slate-800 dark:text-white">
-                      {state.firstName + " " + state.lastName}
-                    </h3>
-                    <p className="text-sm font-medium text-gray-400">
-                      {state.email}
-                    </p>
-                  </div>
+      <div className="flex flex-col rounded-xl border bg-white px-8 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]">
+        <div className="flex w-full items-center">
+          <div className="flex w-full flex-col pt-5 lg:w-full">
+            <div className="group block flex-shrink-0 flex-row">
+              <div className="flex items-end">
+                <div className="relative">
+                  <img
+                    draggable="false"
+                    className="inline-block h-[154px] w-[154px] flex-shrink-0 rounded-full ring-4 ring-gray-400 ring-offset-4"
+                    src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                    alt="User Avatar"
+                  />
+                  <button className="absolute -right-1 bottom-6 flex h-[32px] w-[32px] items-center justify-center rounded-full bg-gray-500 p-1 transition-all hover:bg-gray-600">
+                    <IconCamera className="text-white" />
+                  </button>
+                </div>
+                <div className="ml-5 mb-5">
+                  <h3 className="text-3xl font-semibold text-slate-800 dark:text-white">
+                    {state.firstName + " " + state.lastName}
+                  </h3>
+                  <p className="text-sm font-medium text-gray-400">
+                    {state.email}
+                  </p>
                 </div>
               </div>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mt-5 grid grid-cols-2 gap-2">
-                  <Controller
-                    name="birthDay"
-                    control={control}
-                    render={({ field }) => (
-                      <DatePicker
-                        {...field}
-                        label="Birthday 🥳"
-                        onChange={onChangeBirthday}
-                        max={today}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="gender"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        label={"Gender"}
-                        onChange={onChangeGender}
-                        options={genderOptions}
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="mt-5 flex w-full gap-2">
-                  <Controller
-                    name="selectedCountry"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        label={"Country - Region 🌎"}
-                        options={countryOptions}
-                        onChange={onChangeCountry}
-                      />
-                    )}
-                  />
-
-                  <InputSelect
-                    {...register("phone")}
-                    label={"Phone 📱"}
-                    options={countryCodeOptions}
-                    onChange={onChangePhone}
-                  />
-                </div>
-
-                <div className="mt-5">
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="with-corner-hint"
-                      className="mb-2 block text-sm font-medium text-gray-600 dark:text-white"
-                    >
-                      Bio 👋
-                    </label>
-                    <span className="mb-2 block text-xs text-gray-500">
-                      Optional
-                    </span>
-                  </div>
-                  <Controller
-                    name="bio"
-                    control={control}
-                    render={({ field: { value, ...field } }) => (
-                      <textarea
-                        {...field}
-                        onChange={onChangeBio}
-                        className="block w-full rounded-md border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                        rows={3}
-                        placeholder="I love sharing 🔥..."
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="mt-5 flex w-full">
-                  <Button type="submit" variant="gradient-primary">
-                    Next
-                  </Button>
-                  <Button variant="tertiary" onClick={onCloseStep}>
-                    Close
-                  </Button>
-                </div>
-              </form>
             </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <Controller
+                  name="birthDay"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      {...field}
+                      label="Birthday"
+                      onChange={onChangeBirthday}
+                      max={today}
+                    />
+                  )}
+                />
+                <Controller
+                  name="gender"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label={"Gender"}
+                      onChange={onChangeGender}
+                      options={genderOptions}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="mt-5 flex w-full gap-2">
+                <Controller
+                  name="selectedCountry"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label={"Country - Region"}
+                      options={countryOptions}
+                      onChange={onChangeCountry}
+                    />
+                  )}
+                />
+
+                <InputSelect
+                  {...register("phone")}
+                  label={"Phone"}
+                  options={countryCodeOptions}
+                  onChange={onChangePhone}
+                />
+              </div>
+
+              <div className="mt-5">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="with-corner-hint"
+                    className="mb-2 block text-sm font-medium text-gray-600 dark:text-white"
+                  >
+                    Bio
+                  </label>
+                  <span className="mb-2 block text-xs text-gray-500">
+                    Optional
+                  </span>
+                </div>
+                <Controller
+                  name="bio"
+                  control={control}
+                  render={({ field: { value, ...field } }) => (
+                    <textarea
+                      {...field}
+                      onChange={onChangeBio}
+                      className="block w-full rounded-md border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                      rows={3}
+                      placeholder="I love sharing 🔥..."
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="mt-5 flex w-full">
+                <Button
+                  type="submit"
+                  variant="gradient-primary"
+                  disabled={state.loading}
+                >
+                  {state.loading && <IconLoading />} Next
+                </Button>
+                <Button variant="tertiary" onClick={onCloseStep}>
+                  Close
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

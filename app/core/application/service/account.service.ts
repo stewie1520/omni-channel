@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import invariant from "tiny-invariant";
 import type {
   CreateLoginEmailStudentRequestDto,
   CreateLoginEmailStudentResponseDto,
@@ -7,6 +8,7 @@ import type { HashService } from "~/core/application/service/hash.service";
 import { HASH_SERVICE } from "~/core/application/service/hash.service";
 import { AccountRepository } from "~/core/application/store/account.repository";
 import { UniqueIdentifier } from "~/core/domain/entities/unique-identifier";
+import { AccountProviderEnum } from "~/core/domain/enums/account-provider.enum";
 import type { AccountDto } from "../dtos/account.dto";
 import type {
   CreateLoginEmailAccountRequestDto,
@@ -117,5 +119,26 @@ export class AccountService {
     return {
       id: student.id.toString(),
     };
+  }
+
+  async sendOTP(id: string): Promise<{ otpId: string; expiredAt: Date }> {
+    const account = await this.accountRepository.getById(id);
+    if (!account) throw new Error("Account not found");
+    if (account.provider !== AccountProviderEnum.Mail)
+      throw new Error("Invalid provider");
+
+    const otp = Math.floor(Math.random() * 9000 + 1000).toString();
+    console.log("OTP: ", otp);
+    const otpHashed = await this.hashService.hash(otp);
+
+    invariant(process.env.OTP_TTL, "OTP_TTL is not defined");
+
+    const otpResult = await this.accountRepository.generateOTP(
+      account,
+      otpHashed,
+      parseInt(process.env.OTP_TTL)
+    );
+
+    return otpResult;
   }
 }

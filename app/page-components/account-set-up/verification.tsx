@@ -1,9 +1,11 @@
 import { useSetupContext } from "./hooks/use-setup.hook";
+import Countdown from "react-countdown";
 import { ArrowLeftIcon } from "@heroicons/react/solid";
 import { ActionType } from "./context/set-up.context";
 import { InputOTP } from "./input-otp";
 import { useCallback } from "react";
 import { toStepProfile } from "./context/action-creator";
+import { Button } from "~/components/buttons/button";
 
 export const SetUpVerification = (props: any) => {
   const { dispatch, state } = useSetupContext();
@@ -42,7 +44,18 @@ export const SetUpVerification = (props: any) => {
           />
         </div>
         <div className="mt-4 flex w-full justify-center">
-          <div className="flex w-fit">
+          <div className="flex w-fit flex-col items-center justify-center gap-2">
+            <div className="flex w-fit items-center justify-center gap-1 text-xs font-normal text-slate-600">
+              <span>Will expires in</span>
+              <Countdown
+                date={state.otpExpiredAt}
+                renderer={({ formatted }) => (
+                  <p className="text-sm text-blue-500">
+                    {formatted.minutes}:{formatted.seconds}
+                  </p>
+                )}
+              />
+            </div>
             <InputOTP
               onChange={(value) =>
                 dispatch({
@@ -50,19 +63,13 @@ export const SetUpVerification = (props: any) => {
                   payload: { otp: value },
                 })
               }
-              style={{ marginTop: 32 }}
               mode="numeric"
             />
           </div>
         </div>
       </div>
       <div className="flex items-center justify-center gap-x-2 py-3 px-4 ">
-        <a
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-          href="#"
-        >
-          Verify
-        </a>
+        <Button variant="gradient-primary">Verify</Button>
       </div>
     </div>
   );
