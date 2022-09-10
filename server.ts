@@ -1,10 +1,18 @@
 import { createRequestHandler } from "@remix-run/express";
 import compression from "compression";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import path from "path";
 
 const app = express();
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log("this run", req.url);
+  if (/api/.test(req.url)) {
+    res.status(500).json({ error: err.message });
+  }
+  next(err);
+});
 
 app.use((req, res, next) => {
   // helpful headers:

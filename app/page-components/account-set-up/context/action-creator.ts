@@ -24,7 +24,8 @@ export const toStepProfile = (dispatch: React.Dispatch<SetupAction>) => {
 export const toStepVerification = (
   dispatch: React.Dispatch<SetupAction>,
   otpId: string,
-  otpExpiredAt: Date
+  otpExpiredAt: Date,
+  otpProvider: string
 ) => {
   dispatch({
     type: ActionType.CHANGE_STEP,
@@ -32,6 +33,7 @@ export const toStepVerification = (
       step: 2,
       otpId,
       otpExpiredAt,
+      otpProvider,
     },
   });
 };

@@ -1,10 +1,16 @@
 import { json } from "@remix-run/node";
 
+enum ApplicationCode {
+  UNKNOWN = "UNKNOWN",
+  SESSION_EXPIRED = "SESSION_EXPIRED",
+}
+
 export abstract class HttpResponse extends Error {
   protected constructor(
     public status: number,
     public message: string,
-    public body: any
+    public body: any,
+    public applicationCode: ApplicationCode = ApplicationCode.UNKNOWN
   ) {
     super(message);
   }
@@ -15,11 +21,18 @@ export abstract class HttpResponse extends Error {
         error: this.message,
         status: this.status,
         body: this.body,
+        applicationCode: this.applicationCode,
       },
       {
         status: this.status,
       }
     );
+  }
+}
+
+export class HttpSessionExpired extends HttpResponse {
+  constructor() {
+    super(401, "Session expired", {}, ApplicationCode.SESSION_EXPIRED);
   }
 }
 

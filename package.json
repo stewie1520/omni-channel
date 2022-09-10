@@ -63,6 +63,7 @@
     "react-countdown": "^2.3.2",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.1",
+    "react-hot-toast": "^2.3.0",
     "react-otp-input": "^2.4.0",
     "react-top-loading-bar": "^2.1.0",
     "redis": "^4.3.0",

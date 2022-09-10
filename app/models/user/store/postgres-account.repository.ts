@@ -12,21 +12,27 @@ import { getAccountOTPRepository } from "./redis-entities/account-otp";
 export class PostgresAccountRepository extends AccountRepository {
   async generateOTP(
     account: AccountEntity,
+    provider: { name: "email" | "phone"; id: string },
     otpHashed: string,
     ttl?: number
-  ): Promise<{ otpId: string; expiredAt: Date }> {
+  ): Promise<{ otpId: string; expiredAt: Date; provider: string }> {
     ttl = ttl || 300;
     const repository = await getAccountOTPRepository();
     const existed = await repository
       .search()
       .where("accountId")
       .equals(account.id.toString())
+      .and("provider")
+      .equals(provider.name)
+      .and("providerId")
+      .equals(provider.id)
       .returnFirst();
 
     if (existed) {
       return {
         otpId: existed.entityId,
         expiredAt: new Date(existed.toJSON().issueDate.getTime() + ttl * 1000),
+        provider: existed.toJSON().provider,
       };
     }
 
@@ -34,6 +40,8 @@ export class PostgresAccountRepository extends AccountRepository {
       accountId: account.id.toString(),
       otpHashed,
       issueDate: new Date(),
+      provider: provider.name,
+      providerId: provider.id,
     });
 
     if (ttl !== undefined) {
@@ -45,6 +53,7 @@ export class PostgresAccountRepository extends AccountRepository {
     return {
       otpId: entity.entityId,
       expiredAt: new Date(raw.issueDate.getTime() + ttl * 1000),
+      provider: raw.provider,
     };
   }
 

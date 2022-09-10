@@ -9,9 +9,10 @@ export abstract class AccountRepository {
   abstract deleteByEmail(email: string): Promise<AccountEntity>;
   abstract generateOTP(
     account: AccountEntity,
+    provider: { name: "email" | "phone"; id: string },
     otpHashed: string,
     ttl?: number
-  ): Promise<{ otpId: string; expiredAt: Date }>;
+  ): Promise<{ otpId: string; expiredAt: Date; provider: string }>;
   abstract createByEmail(data: {
     id?: string;
     email: string;

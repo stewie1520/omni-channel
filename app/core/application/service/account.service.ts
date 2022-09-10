@@ -135,6 +135,7 @@ export class AccountService {
 
     const otpResult = await this.accountRepository.generateOTP(
       account,
+      { name: "email", id: account.email },
       otpHashed,
       parseInt(process.env.OTP_TTL)
     );

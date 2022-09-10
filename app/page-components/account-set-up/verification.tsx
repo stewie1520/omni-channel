@@ -32,8 +32,9 @@ export const SetUpVerification = (props: any) => {
       </div>
       <div className="flex w-full flex-col items-center justify-center overflow-y-auto p-4 pt-0">
         <p className="inline-block max-w-md px-5 text-center text-sm text-gray-800 dark:text-gray-400">
-          We've just sent a verification code to your email address. Please
-          enter it below to continue.
+          We've just sent a verification code to your{" "}
+          {state.otpProvider === "email" ? "email address" : "phone number"}.
+          Please enter it below to continue.
         </p>
         <div className="mt-4 flex w-full justify-center">
           <img

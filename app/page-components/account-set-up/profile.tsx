@@ -1,13 +1,14 @@
 import IconCamera from "@ant-design/icons/CameraFilled";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useMemo, useState } from "react";
 import IconLoading from "@ant-design/icons/LoadingOutlined";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useCallback, useMemo } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Button } from "~/components/buttons/button";
 import { DatePicker } from "~/components/inputs/date-picker";
 import { InputSelect } from "~/components/inputs/input-select";
+import notify from "~/libs/notify";
 import { Select } from "../../components/inputs/select";
 import {
   backToStepRole,
@@ -120,13 +121,21 @@ export const SetUpProfile = (props: any) => {
         method: "post",
       });
 
-      const { otpId, expiredAt } = (await result.json()) as {
+      const data = await result.json();
+
+      if (!result.ok) {
+        throw new Error(data.message);
+      }
+
+      const { otpId, expiredAt, provider } = data as {
         otpId: string;
         expiredAt: Date;
+        provider: string;
       };
 
-      toStepVerification(dispatch, otpId, new Date(expiredAt));
-    } catch (err) {
+      toStepVerification(dispatch, otpId, new Date(expiredAt), provider);
+    } catch (err: any) {
+      notify.error(err.message);
       console.log("err", err);
     } finally {
       setLoading(dispatch, false);

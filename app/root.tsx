@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import type {
   LinksFunction,
   LoaderFunction,
@@ -38,6 +39,23 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 };
 
+export function ErrorBoundary({ error }) {
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {/* add the UI you want your users to see */}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
 export default function App() {
   return (
     <html lang="en" className="h-full">
@@ -46,6 +64,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
+        <Toaster position="top-center" reverseOrder={false} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

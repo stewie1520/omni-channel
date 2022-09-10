@@ -8,6 +8,11 @@ invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 invariant(process.env.REDIS_HOST, "REDIS_HOST must be set");
 invariant(process.env.REDIS_PORT, "REDIS_PORT must be set");
 
+const EXPIRATION_DURATION_IN_SECONDS = 30;
+
+const expires = new Date();
+expires.setSeconds(expires.getSeconds() + EXPIRATION_DURATION_IN_SECONDS);
+
 export const sessionStorage = createRedisSessionStorage({
   cookie: {
     name: "__session",
@@ -16,6 +21,7 @@ export const sessionStorage = createRedisSessionStorage({
     sameSite: "lax",
     secrets: [process.env.SESSION_SECRET],
     secure: process.env.NODE_ENV === "production",
+    expires,
   },
   options: {
     redisConfig: {

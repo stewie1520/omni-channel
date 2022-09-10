@@ -18,6 +18,7 @@ export type SetupState = {
   otp: string;
   selectedCountry: string;
   otpId: string;
+  otpProvider: string;
   otpExpiredAt: Date;
   loading: boolean;
 };
@@ -38,6 +39,7 @@ export const defaultSetupState: SetupState = {
   countries: [],
   otpId: "",
   otpExpiredAt: new Date(),
+  otpProvider: "",
   selectedCountry: "",
 };
 
@@ -77,6 +79,10 @@ export const setupReducer = reducer<SetupState>({
 
     if (payload.otpExpiredAt) {
       state.otpExpiredAt = payload.otpExpiredAt;
+    }
+
+    if (payload.otpProvider) {
+      state.otpProvider = payload.otpProvider;
     }
   },
   [ActionType.SET_LOADING]: (state, payload) => {

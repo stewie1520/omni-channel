@@ -4,6 +4,8 @@ import { getRedisOMClient } from "~/redis.server";
 export class AccountOTP extends Entity {}
 export const AccountOTPSchema = new Schema<AccountOTP>(AccountOTP, {
   accountId: { type: "string", indexed: true },
+  provider: { type: "string" },
+  providerId: { type: "string" },
   otpHashed: { type: "string" },
   issueDate: { type: "date" },
 });
